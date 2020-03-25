@@ -1,0 +1,155 @@
+Class DataPipe.Data.Inbox Extends (%Persistent, InboxAttributes, %XML.Adaptor, Form.Adaptor)
+{
+
+Parameter FORMNAME = "Inbox";
+
+Parameter OBJPERMISSIONS As %String = "CRUD";
+
+Parameter DISPLAYPROPERTY As %String = "Id";
+
+Parameter FORMORDERBY As %String = "Id";
+
+/// *Calculated* Id. %ID value projected to JSON
+Property Id As %Integer(%JSONINCLUDE = "OUTPUTONLY") [ Calculated, SqlComputeCode = { set {*}={%%ID}}, SqlComputed ];
+
+/// Status
+Property Status As %String(VALUELIST = ",INGESTING,ERROR-INGESTING,STAGING,ERROR-STAGING,OPERATING,DONE,ERROR-OPERATING,ERROR-GENERAL");
+
+/// Created
+Property CreatedTS As %TimeStamp;
+
+/// Created
+Property UpdatedTS As %TimeStamp;
+
+/// Ref. to last Ingestion
+Property LastIngestion As Ingestion(%JSONREFERENCE = "ID");
+
+/// Ref. to last Staging 
+Property LastStaging As Staging(%JSONREFERENCE = "ID");
+
+/// Ref. to last Oper
+Property LastOper As Oper(%JSONREFERENCE = "ID");
+
+/// *Calculated* StagingStatus (from LastStaging). Used in queries from app
+Property StagingStatus As %String(MAXLEN = "") [ SqlComputeCode = { set {StagingStatus} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastStaging->Status", "N/A", {%%ID})
+}, SqlComputed, Transient ];
+
+/// *Calculated* OperStatus (from LastOper). Used in queries from app
+Property OperStatus As %String(MAXLEN = "") [ SqlComputeCode = { set {OperStatus} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastOper->Status", "N/A", {%%ID})
+}, SqlComputed, Transient ];
+
+/// *Calculated* ValidationErrorsJson (from LastStaging). Used in queries from app
+Property ValidationErrors As %String(MAXLEN = "") [ SqlComputeCode = { set {ValidationErrors} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastStaging->ValidationErrorsJson", "", {%%ID})
+}, SqlComputed, Transient ];
+
+/// *Calculated* OperErrorsJson (from LastOper). Used in queries from app
+Property OperErrors As %String(MAXLEN = "") [ SqlComputeCode = { set {OperErrors} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastOper->OperErrorsJson", "", {%%ID})
+}, SqlComputed, Transient ];
+
+/// Related Ingestions
+Relationship Ingestions As Ingestion(%JSONREFERENCE = "ID") [ Cardinality = many, Inverse = Inbox ];
+
+/// Index
+Index PkIdx On (Source, Flow, MsgId) [ Unique ];
+
+/// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Inbox/find
+ClassMethod queryFIND() As %String
+{
+  quit "UpdatedTS, Id, Source, Flow, MsgId, Element, Status, StagingStatus, OperStatus, ValidationErrors, OperErrors "
+}
+
+/// Get an Inbox record, querying by key attributes
+/// This method is used to determine if an Inbox record can be re-used
+ClassMethod GetByKeyAttributes(att As InboxAttributes, Output obj As Inbox) As %Status
+{
+	set ret = $$$OK
+	try {
+		// valid inbox attributes?
+		$$$ThrowOnError(att.IsValid())
+
+		set obj="", inboxId=""
+
+		set sql = "select %id from DataPipe_Data.Inbox where Source=? and Flow=? and MsgId=?"
+		set statement = ##class(%SQL.Statement).%New()
+		$$$ThrowOnError(statement.%Prepare(sql))
+
+		set result = statement.%Execute(att.Source, att.Flow, att.MsgId)
+		if result.%Next() {
+			set inboxId = result.%GetData(1)
+			set obj = ..%OpenId(inboxId)
+		}
+		
+	} catch ex {
+		set ret = ex.AsStatus()
+	}
+	quit ret
+}
+
+/// Calculate a SQL field given an Inbox ID
+/// This method is used by calculated SQL fields
+ClassMethod CalcSqlFieldById(field As %String, default As %String, id As %String) As %String
+{
+	set ret = default
+	try {
+		set sql = "select "_field_" from DataPipe_Data.Inbox where %id=?"
+		set statement = ##class(%SQL.Statement).%New()
+		$$$ThrowOnError(statement.%Prepare(sql))
+
+		set result = statement.%Execute(id)
+		if result.%Next() {
+			set ret = result.%GetData(1)
+			if ret="" set ret=default
+		}
+		
+	} catch ex {
+		set sc = ex.AsStatus()
+	}
+	quit ret
+}
+
+Storage Default
+{
+<Data name="InboxDefaultData">
+<Value name="1">
+<Value>%%CLASSNAME</Value>
+</Value>
+<Value name="2">
+<Value>Source</Value>
+</Value>
+<Value name="3">
+<Value>Flow</Value>
+</Value>
+<Value name="4">
+<Value>MsgId</Value>
+</Value>
+<Value name="5">
+<Value>Element</Value>
+</Value>
+<Value name="6">
+<Value>Status</Value>
+</Value>
+<Value name="7">
+<Value>CreatedTS</Value>
+</Value>
+<Value name="8">
+<Value>UpdatedTS</Value>
+</Value>
+<Value name="9">
+<Value>LastIngestion</Value>
+</Value>
+<Value name="10">
+<Value>LastStaging</Value>
+</Value>
+<Value name="11">
+<Value>LastOper</Value>
+</Value>
+</Data>
+<DataLocation>^DataPipe.Data.InboxD</DataLocation>
+<DefaultData>InboxDefaultData</DefaultData>
+<IdLocation>^DataPipe.Data.InboxD</IdLocation>
+<IndexLocation>^DataPipe.Data.InboxI</IndexLocation>
+<StreamLocation>^DataPipe.Data.InboxS</StreamLocation>
+<Type>%Storage.Persistent</Type>
+}
+
+}

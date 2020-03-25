@@ -1,0 +1,174 @@
+{
+	"info": {
+		"_postman_id": "c797fcfe-2db4-48f0-9ff2-077038811c2b",
+		"name": "datapipe",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "read - form/object/DataPipe.Data.Inbox/:id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Rest.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/{{endpoint}}/form/object/DataPipe.Data.Inbox/1",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{endpoint}}",
+						"form",
+						"object",
+						"DataPipe.Data.Inbox",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "query - form/objects/DataPipe.Data.Inbox/find",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Rest.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/{{endpoint}}/form/objects/DataPipe.Data.Inbox/find?filter=Flow+contains+ADT&page=1&size=10&collation=UPPER&orderby=1+desc",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"{{endpoint}}",
+						"form",
+						"objects",
+						"DataPipe.Data.Inbox",
+						"find"
+					],
+					"query": [
+						{
+							"key": "filter",
+							"value": "Flow+contains+ADT"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "collation",
+							"value": "UPPER"
+						},
+						{
+							"key": "orderby",
+							"value": "1+desc"
+						}
+					]
+				},
+				"description": "This query uses **`App.Data.Show:queryFIND()`** *classmethod* in IRIS.\n\n```\nClassMethod queryFIND() As %String\n{\n  quit \"showid id, title, description \"\n}\n```"
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "basic",
+		"basic": [
+			{
+				"key": "password",
+				"value": "SYS",
+				"type": "string"
+			},
+			{
+				"key": "username",
+				"value": "superuser",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "71b1c1b3-9718-4f64-8c1a-2f4500a5bc4c",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "96b38da2-d62c-46ab-9dc0-1e472dec3e6b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "9150905c-b93d-45d2-9951-15eceb03addd",
+			"key": "host",
+			"value": "localhost",
+			"type": "string"
+		},
+		{
+			"id": "1dc66995-b249-448f-8ebf-de2c969b12c6",
+			"key": "port",
+			"value": "52773",
+			"type": "string"
+		},
+		{
+			"id": "dcd188f7-48b9-45ae-ac93-12c9ead91863",
+			"key": "endpoint",
+			"value": "myapp/api/rf2",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
