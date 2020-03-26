@@ -24,11 +24,6 @@ WORKDIR /tmp/RESTForms2-master
 WORKDIR /app
 COPY src src
 
-# download zpm package manager
-RUN mkdir -p /tmp/deps \
- && cd /tmp/deps \
- && wget -q https://pm.community.intersystems.com/packages/zpm/latest/installer -O zpm.xml
-
 SHELL ["/irissession.sh"]
 RUN \
   # install RESTForms2
@@ -41,13 +36,15 @@ RUN \
   set vars("SourcePath")="/tmp/RESTForms2-master/src/" \
   set sc = ##class(Form.Installer).Run(.vars) \
   zn "DPIPE" \
-  # install zpm
-  Do $system.OBJ.Load("/tmp/deps/zpm.xml", "ck") \
-  zpm "install webterminal" \
-  # install datapipe
+  # install datapipe 
+  kill vars \
   do $SYSTEM.OBJ.Load("/app/src/DataPipe/Installer.cls", "ck") \
-  set sc = ##class(App.Installer).Run()
-
+  set vars("Namespace")="DPIPE"  \
+  set vars("WebApp")="/dpipe/api" \
+  set vars("SourcePath")="/app/src" \
+  set vars("StartTestProduction")="yes" \
+  set sc = ##class(DataPipe.Installer).Run(.vars) 
+  
 # bringing the standard shell back
 SHELL ["/bin/bash", "-c"]
 CMD [ "-l", "/usr/irissys/mgr/messages.log" ]

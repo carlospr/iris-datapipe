@@ -1,9 +1,9 @@
-Class DataPipe.Test.HL7.Prod Extends Ens.Production
+Class DataPipe.Test.Production Extends Ens.Production
 {
 
 XData ProductionDefinition
 {
-<Production Name="DataPipe.Test.HL7.Prod" TestingEnabled="true" LogGeneralTraceEvents="true">
+<Production Name="DataPipe.Test.Production" TestingEnabled="true" LogGeneralTraceEvents="true">
   <Description></Description>
   <ActorPoolSize>2</ActorPoolSize>
   <Item Name="HL7 In" Category="Ingestion" ClassName="EnsLib.HL7.Service.FileService" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">

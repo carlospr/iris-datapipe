@@ -1,25 +1,31 @@
+*DataPipe* is an **InterSystems IRIS** application which provides a set of re-usable components you can use to handle incoming data flow into ingestion, staging and operation phases in a homogeneus and flexible way.
 
-# DEVELOPMENT
+Want to contribute to this project? See [CONTRIB.md](./CONTRIB.md)
 
-## Run
-Run containers:
-```
-docker-compose up
-```
+# Requirements
+* InterSystems IRIS
+* RESTForms2
 
-## Test
-In IRIS:
-Generate hl7 sample messages:
+# Installation
+Download repository:
 ```
-do ##class(DataPipe.Test.Helper).GenerateFilesHL7ADT(100)
-```
-
-Delete data (if needed):
-```
-do ##class(DataPipe.Test.Helper).KillData()
+cd /tmp
+git clone https://github.com/intersystems-ib/iris-datapipe
 ```
 
-## datapipeUI
-Credentials: superuser/SYS
+Install:
+```objectscript
+# load installer
+do $SYSTEM.OBJ.Load("/tmp/iris-datapipe/src/Form/Installer.cls", "ck") \
 
-http://localhost:4200/datapipe
+# set installer options
+# -- namespace to install
+set vars("Namespace")="DPIPE"
+# -- web application name (REST API)
+set vars("WebApp")="/dpipe/api"
+# -- path to source code
+set vars("SourcePath")="/tmp/iris-datapipe/src/"
+
+# run installer
+do ##class(DataPipe.Installer).Run(.vars)
+```

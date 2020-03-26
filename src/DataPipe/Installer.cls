@@ -1,17 +1,46 @@
-Class App.Installer Extends %RegisteredObject
+Class DataPipe.Installer Extends %RegisteredObject
 {
 
 Parameter Namespace = "DPIPE";
 
 Parameter SourcePath = "/app/src";
 
+Parameter CreateNamespace = "no";
+
+Parameter DataDBPath;
+
+Parameter CodeDBPath;
+
+Parameter CreateWebApp = "yes";
+
+Parameter WebApp;
+
+Parameter StartTestProduction = "no";
+
 XData Install [ XMLNamespace = INSTALLER ]
 {
 <Manifest> 
-    <Namespace Name="${Namespace}" Create="yes" Ensemble="">
-        <Import File="${SourcePath}" Recurse="1" Flags="cuk" />
-        <Production Name="DataPipe.Test.HL7.Prod" AutoStart="1"/>
-    </Namespace>
+    <If Condition='"${CreateNamespace}"="yes"'>
+        <Log Text="Creating namespace ${Namespace}" Level="0"/> 
+        <Namespace Name="${Namespace}" Create="yes" Ensemble=""> 
+            <Configuration> 
+                <Database Name="${Namespace}-DATA" Dir="${DataDBPath}" Create="yes" MountRequired="true" Resource="%DB_DEFAULT" PublicPermissions="RW" MountAtStartup="true"/> 
+                <Database Name="${Namespace}-APP" Dir="${CodeDBPath}" Create="yes" MountRequired="true" Resource="%DB_DEFAULT" PublicPermissions="RW" MountAtStartup="true"/> 
+            </Configuration>
+            <Import File="${SourcePath}" Recurse="1" Flags="cuk" />
+        </Namespace>
+    </If>
+    <If Condition='"${CreateNamespace}"="no"'>
+        <Log Text="Using namespace ${Namespace}" Level="0"/> 
+        <Namespace Name="${Namespace}"> 
+            <Import File="${SourcePath}" Recurse="1" Flags="cuk" />
+        </Namespace>
+    </If>
+    <If Condition='"${StartTestProduction}"="yes"'>
+        <Namespace Name="${Namespace}">
+            <Production Name="DataPipe.Test.Production" AutoStart="1"/>
+        </Namespace> 
+    </If>
 </Manifest>
 }
 
@@ -29,18 +58,19 @@ ClassMethod Run(ByRef vars) As %Status
         write "START INSTALLER",! 
         
         // set default values for installer variables
-        for ivar="SourcePath","Namespace" {
+        for ivar="SourcePath","Namespace","CreateNamespace","CreateDB","DataDBPath","CodeDBPath","CreateWebApp","WebApp","EnableUnitTestPortal" {
             if '$data(vars(ivar)) set vars(ivar)=$parameter($classname(), ivar)
         } 
-        
         set sc = ..RunManifest(.vars) 
         if $$$ISOK(sc) {
             write !,"INSTALLER SUCCESS"
         }
         $$$ThrowOnError(sc)
 
-        // create web app
-        $$$ThrowOnError(..CreateWebApp($get(vars("Namespace")), "/dpipe/api", "DataPipe.REST.Main"))
+        // create web application
+        if vars("CreateWebApp")="yes" { 
+            $$$ThrowOnError(..CreateWebApp(vars("Namespace"), vars("WebApp"), "DataPipe.REST.Main"))
+        }
 
     } catch ex { 
         set sc = ex.AsStatus() 
