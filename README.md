@@ -15,17 +15,17 @@ git clone https://github.com/intersystems-ib/iris-datapipe
 
 Install:
 ```objectscript
-# load installer
+// load installer
 do $SYSTEM.OBJ.Load("/tmp/iris-datapipe/src/Form/Installer.cls", "ck") \
 
-# set installer options
-# -- namespace to install
+// set installer options
+// -- namespace to install
 set vars("Namespace")="DPIPE"
-# -- web application name (REST API)
+// -- web application name (REST API)
 set vars("WebApp")="/dpipe/api"
-# -- path to source code
+// -- path to source code
 set vars("SourcePath")="/tmp/iris-datapipe/src/"
 
-# run installer
+// run installer
 do ##class(DataPipe.Installer).Run(.vars)
 ```
