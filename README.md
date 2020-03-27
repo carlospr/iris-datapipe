@@ -4,7 +4,7 @@ Want to contribute to this project? See [CONTRIB.md](./CONTRIB.md)
 
 # Requirements
 * InterSystems IRIS
-* RESTForms2
+* [RESTForms2](https://github.com/intersystems-community/RESTForms2)
 
 # Installation
 Download repository:
