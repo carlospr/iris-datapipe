@@ -16,7 +16,7 @@ git clone https://github.com/intersystems-ib/iris-datapipe
 Install:
 ```objectscript
 // load installer
-do $SYSTEM.OBJ.Load("/tmp/iris-datapipe/src/Form/Installer.cls", "ck") \
+do $SYSTEM.OBJ.Load("/tmp/iris-datapipe/src/DataPipe/Installer.cls", "ck")
 
 // set installer options
 // -- namespace to install
