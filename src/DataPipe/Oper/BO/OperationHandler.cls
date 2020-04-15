@@ -17,7 +17,7 @@ Method OperationHandler(pRequest As DataPipe.Msg.OperReq, Output pResponse As En
 		$$$ThrowOnError(operObj.%Save())
 
 		// deserialize model
-		set modelData = pRequest.data.Ingestion.ModelData
+		set modelData = pRequest.data.ModelNormData
         set modelName = pRequest.data.Ingestion.ModelName
         set sc = $classmethod(modelName, "Deserialize", modelData, .modelObj)
         $$$ThrowOnError(sc)
