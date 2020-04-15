@@ -4,7 +4,7 @@ Want to contribute to this project? See [CONTRIB.md](./CONTRIB.md)
 
 # Requirements
 * InterSystems IRIS
-* RESTForms2
+* [RESTForms2](https://github.com/intersystems-community/RESTForms2)
 
 # Installation
 Download repository:
@@ -16,7 +16,7 @@ git clone https://github.com/intersystems-ib/iris-datapipe
 Install:
 ```objectscript
 // load installer
-do $SYSTEM.OBJ.Load("/tmp/iris-datapipe/src/Form/Installer.cls", "ck") \
+do $SYSTEM.OBJ.Load("/tmp/iris-datapipe/src/DataPipe/Installer.cls", "ck")
 
 // set installer options
 // -- namespace to install
