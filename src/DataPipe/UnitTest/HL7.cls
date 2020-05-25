@@ -27,7 +27,7 @@ Method SendTestMessage(input As %DynamicObject, target As %String, Output inbox)
   // send message
   set sc = ##class(EnsLib.Testing.Service).SendTestRequest(target, hl7, .rsp, .sessionId, 1)
   do $$$AssertStatusOK(sc, "sent message to "_target)
-  hang .5  ; wait after sending a message, as BP are not sync.
+  hang ..#WaitTime  ; wait after sending a message, as BP are not sync.
 
   // check values
   set sc = ##class(DataPipe.UnitTest.Helper).FindInboxByMsgId(input.MsgId, .inbox)
