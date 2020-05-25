@@ -32,11 +32,11 @@ Property LastOper As Oper(%JSONREFERENCE = "ID");
 
 /// *Calculated* StagingStatus (from LastStaging). Used in queries from app
 Property StagingStatus As %String(MAXLEN = "") [ SqlComputeCode = { set {StagingStatus} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastStaging->Status", "N/A", {%%ID})
-}, SqlComputed, Transient ];
+}, SqlComputed, SqlComputeOnChange = %%UPDATE ];
 
 /// *Calculated* OperStatus (from LastOper). Used in queries from app
 Property OperStatus As %String(MAXLEN = "") [ SqlComputeCode = { set {OperStatus} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastOper->Status", "N/A", {%%ID})
-}, SqlComputed, Transient ];
+}, SqlComputed, SqlComputeOnChange = %%UPDATE ];
 
 /// *Calculated* ValidationErrorsJson (from LastStaging). Used in queries from app
 Property ValidationErrors As %String(MAXLEN = "") [ SqlComputeCode = { set {ValidationErrors} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastStaging->ValidationErrorsJson", "", {%%ID})
@@ -49,8 +49,23 @@ Property OperErrors As %String(MAXLEN = "") [ SqlComputeCode = { set {OperErrors
 /// Related Ingestions
 Relationship Ingestions As Ingestion(%JSONREFERENCE = "ID") [ Cardinality = many, Inverse = Inbox ];
 
-/// Index
 Index PkIdx On (Source, Flow, MsgId) [ Unique ];
+
+Index StatusIdx On Status [ Type = bitmap ];
+
+Index UpdatedTSIdx On UpdatedTS;
+
+Index StagingStatusIdx On StagingStatus [ Type = bitmap ];
+
+Index OperStatusIdx On OperStatus [ Type = bitmap ];
+
+Index SourceIdx On Source [ Type = bitmap ];
+
+Index FlowIdx On Flow [ Type = bitmap ];
+
+Index MsgIdIdx On MsgId;
+
+Index ElementIdx On Element;
 
 /// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Inbox/find
 ClassMethod queryFIND() As %String
@@ -142,6 +157,12 @@ Storage Default
 </Value>
 <Value name="11">
 <Value>LastOper</Value>
+</Value>
+<Value name="12">
+<Value>StagingStatus</Value>
+</Value>
+<Value name="13">
+<Value>OperStatus</Value>
 </Value>
 </Data>
 <DataLocation>^DataPipe.Data.InboxD</DataLocation>
