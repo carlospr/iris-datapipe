@@ -23,17 +23,17 @@ Method OperationHandler(pRequest As DataPipe.Msg.OperReq, Output pResponse As En
         $$$ThrowOnError(sc)
 
 		// perform operation
-		set sc = modelObj.RunOperation(.errorList, .operLog)
-		if $$$ISOK(sc) {
+		set operationSC = modelObj.RunOperation(.errorList, .operLog)
+		if $$$ISOK(operationSC) {
 			// update status
 			set operObj.Status = "PROCESSED"
 			set inboxObj.Status = "DONE"
 		} else {
-			// udpate status
+			// update status
 			set operObj.Status = "ERROR"
 			set inboxObj.Status = "ERROR-OPERATING"
 			
-			$$$LOGERROR($system.Status.GetOneStatusText(sc))
+			$$$LOGERROR($system.Status.GetOneStatusText(operationSC))
 
 			// serialize errors
 			set operObj.OperErrors = errorList
@@ -42,9 +42,9 @@ Method OperationHandler(pRequest As DataPipe.Msg.OperReq, Output pResponse As En
 		
 		set operObj.OperLog = operLog
 		$$$ThrowOnError(operObj.%Save())
-		$$$ThrowOnError(sc)
-
 		$$$ThrowOnError(inboxObj.%Save())
+		
+		$$$ThrowOnError(operationSC)
 
  	} catch ex {
 		set ret = ex.AsStatus()
