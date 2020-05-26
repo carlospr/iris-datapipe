@@ -83,7 +83,7 @@ Index SubjectIdx On Subject;
 /// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Inbox/find
 ClassMethod queryFIND() As %String
 {
-  quit "UpdatedTS, Id, Source, Flow, MsgId, Element, Ignored, Status, StagingStatus, OperStatus, ValidationErrors, OperErrors, OperRetries "
+  quit "UpdatedTS, Id, Source, Flow, MsgId, Element, Subject, Ignored, Status, StagingStatus, OperStatus, ValidationErrors, OperErrors, OperRetries "
 }
 
 /// Get an Inbox record, querying by key attributes
