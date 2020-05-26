@@ -78,6 +78,8 @@ Index MsgIdIdx On MsgId;
 
 Index ElementIdx On Element;
 
+Index SubjectIdx On Subject;
+
 /// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Inbox/find
 ClassMethod queryFIND() As %String
 {
@@ -194,6 +196,9 @@ Storage Default
 </Value>
 <Value name="15">
 <Value>OperRetries</Value>
+</Value>
+<Value name="16">
+<Value>Subject</Value>
 </Value>
 </Data>
 <DataLocation>^DataPipe.Data.InboxD</DataLocation>

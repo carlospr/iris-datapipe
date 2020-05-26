@@ -1,13 +1,20 @@
 Class DataPipe.Data.InboxAttributes Extends (%RegisteredObject, %XML.Adaptor)
 {
 
-Property Source As %String;
+/// data source
+Property Source As %String(MAXLEN = "");
 
-Property Flow As %String;
+/// data workflow
+Property Flow As %String(MAXLEN = "");
 
-Property MsgId As %String;
+/// message identifier
+Property MsgId As %String(MAXLEN = "");
 
-Property Element As %String;
+/// data element (e.g. visitnumber)
+Property Element As %String(MAXLEN = "");
+
+/// data subject (e.g. patient)
+Property Subject As %String(MAXLEN = "");
 
 Method IsValid() As %Status
 {
@@ -31,6 +38,7 @@ Method PopulateAttributes(att As InboxAttributes) As %Status
 		set ..Flow = att.Flow
 		set ..MsgId = att.MsgId
 		set ..Element = att.Element
+		set ..Subject = att.Subject
 		
 	} catch ex {
 		set ret = ex.AsStatus()

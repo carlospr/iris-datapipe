@@ -36,6 +36,7 @@ ClassMethod GenerateHL7(input As %DynamicObject = {{}}, template As %String, doc
         if input.DOB="" set input.DOB = ##class(DataPipe.Test.HL7.Functions).DateToHL7Date(##class(%PopulateUtils).Date($horolog-(365*40)))
         if input.AdministrativeSex="" set input.AdministrativeSex = ##class(%PopulateUtils).ValueList(",M,F,")
         if input.SSN="" set input.SSN = ##class(%PopulateUtils).SSN()
+        if input.VisitNumber="" set input.VisitNumber = ##class(%PopulateUtils).ValueList(",O,I,E")_##class(%PopulateUtils).Integer(99999,999999)
         
         // load template hl7 message
         set hl7 = ##class(EnsLib.HL7.Message).ImportFromFile(template,,.sc)
@@ -51,6 +52,7 @@ ClassMethod GenerateHL7(input As %DynamicObject = {{}}, template As %String, doc
         do hl7.SetValueAt(input.DOB, "PID:7.1")
         do hl7.SetValueAt(input.AdministrativeSex, "PID:8")
         do hl7.SetValueAt(input.SSN, "PID:19")
+        do hl7.SetValueAt(input.VisitNumber, "PV1:19")
 
     } catch ex {
         set ret = ex.AsStatus()
