@@ -28,10 +28,15 @@ Method IngestionManager() As %Status
     set ret = $$$OK
     try {
         $$$ThrowOnError(..InitInbox())
-        $$$ThrowOnError(..InitIngestion())
-        $$$ThrowOnError(..SerializeModel())
-        $$$ThrowOnError(..SaveData())
-        $$$ThrowOnError(..BuildStagingReq())
+        // avoid ingesting ignored inboxes
+        if '..Inbox.Ignored {
+            $$$ThrowOnError(..InitIngestion())
+            $$$ThrowOnError(..SerializeModel())
+            $$$ThrowOnError(..SaveData())
+            $$$ThrowOnError(..BuildStagingReq())
+        } else {
+           $$$LOGWARNING("Ignoring Inbox "_inbox.%Id()_" because has been set as ignored before") 
+        }
         
     } catch ex {
         set ret = ex.AsStatus()

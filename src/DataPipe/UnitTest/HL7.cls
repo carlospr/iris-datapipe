@@ -5,8 +5,11 @@ Class DataPipe.UnitTest.HL7 Extends %UnitTest.TestCase
 /// ingestion BP in test production where test messages will be sent
 Parameter TargetIngestion = "HL7 Ingestion";
 
-/// wait after sending a message to test production and checking the outcome 
+/// secs to wait after sending a message to test production and checking the outcome 
 Parameter WaitTime = .5;
+
+/// secs to wait for a FIFO retry
+Parameter WaitTimeFIFO = 5;
 
 /// Delete data after running tests
 Method OnAfterAllTests() As %Status
@@ -105,6 +108,80 @@ Method TestDone()
     do $$$AssertEquals(inbox.Status, "DONE")
     do $$$AssertEquals(inbox.LastStaging.Status, "VALID")
     do $$$AssertEquals(inbox.LastOper.Status, "PROCESSED")
+}
+
+/// Ignored message
+Method TestIgnored()
+{
+    // send a regular message
+    set input = { 
+      "MsgId": "Ignored",
+      "Name": "Test",
+      "AdministrativeSex": "M" 
+    }
+    do ..SendTestMessage(input, ..#TargetIngestion, .inbox)
+    do $$$AssertEquals(inbox.Status, "DONE")
+    do $$$AssertEquals(inbox.LastStaging.Status, "VALID")
+    do $$$AssertEquals(inbox.LastOper.Status, "PROCESSED")
+
+    // set inbox as ignored
+    do $$$AssertStatusOK(inbox.Ignore())
+    do $$$AssertEquals(inbox.Ignored, 1)
+
+    // send again same message. must have same inbox, and set as ignored
+    do ..SendTestMessage(input, ..#TargetIngestion, .newInbox)
+    do $$$AssertEquals(newInbox.%Id(), inbox.%Id())
+    do $$$AssertEquals(newInbox.Status, inbox.Status)
+    do $$$AssertEquals(newInbox.UpdatedTS, inbox.UpdatedTS)
+    do $$$AssertEquals(newInbox.LastIngestion.%Id(), inbox.LastIngestion.%Id())
+    do $$$AssertEquals(newInbox.LastStaging.%Id(), inbox.LastStaging.%Id())
+    do $$$AssertEquals(newInbox.LastOper.%Id(), inbox.LastOper.%Id())
+    do $$$AssertEquals(newInbox.Ignored, 1)
+}
+
+/// FIFO + Ignored behaviour
+Method TestFIFO()
+{
+    // msg1 - error processing, keep retrying
+    set input1 = { 
+      "MsgId": "FIFO-1-Error",
+      "Name": ($piece(##class(DataPipe.Test.HL7.Helper).OperationErrorNames(), ",", 1)),
+      "AdministrativeSex": "M"
+    }
+    do ..SendTestMessage(input1, ..#TargetIngestion, .inbox1)
+    do $$$AssertEquals(inbox1.Status, "ERROR-OPERATING")
+    do $$$AssertEquals(inbox1.LastStaging.Status, "VALID")
+    do $$$AssertEquals(inbox1.LastOper.Status, "ERROR")
+    do $$$AssertEquals(inbox1.Ignored, 0)
+    do $$$LogMessage("waiting: fifo operation failing & retrying...")
+    hang ..#WaitTimeFIFO
+
+    // msg2 - queued
+    set input2 = { 
+      "MsgId": "FIFO-2-OK",
+      "Name": "Test",
+      "AdministrativeSex": "M"
+    }
+    do ..SendTestMessage(input2, ..#TargetIngestion, .inbox2)
+    do $$$AssertEquals(inbox2.Status, "OPERATING")
+    do $$$AssertEquals(inbox2.LastStaging.Status, "VALID")
+    do $$$AssertEquals(inbox2.LastOper.Status, "N/A")
+
+    // ignore msg1 => msg1 will be done, msg2 will be processed
+    do $$$AssertStatusOK(inbox1.Ignore())
+    do $$$AssertEquals(inbox1.Ignored, 1)
+    do $$$LogMessage("waiting: inbox ignored, will be skipped on next retry...")
+    hang ..#WaitTimeFIFO
+
+    do $$$AssertStatusOK(inbox1.%Reload())
+    do $$$AssertEquals(inbox1.Status, "DONE")
+    do $$$AssertEquals(inbox1.LastStaging.Status, "VALID")
+    do $$$AssertEquals(inbox1.LastOper.Status, "IGNORED")
+    
+    do $$$AssertStatusOK(inbox2.%Reload())
+    do $$$AssertEquals(inbox2.Status, "DONE")
+    do $$$AssertEquals(inbox2.LastStaging.Status, "VALID")
+    do $$$AssertEquals(inbox2.LastOper.Status, "PROCESSED")
 }
 
 }

@@ -10,6 +10,7 @@ Parameter TREATEMPTYREPEATINGFIELDASNULL = 0;
 XData DTL [ XMLNamespace = "http://www.intersystems.com/dtl" ]
 {
 <transform sourceClass='EnsLib.HL7.Message' targetClass='DataPipe.Test.HL7.Models.A08' sourceDocType='2.5:ADT_A01' create='new' language='objectscript' >
+<assign value='source.{MSH:MessageControlID}' property='target.MsgId' action='set' />
 <assign value='source.{PID:PatientID.IDNumber}' property='target.PatientId' action='set' />
 <assign value='source.{PID:PatientName(1).GivenName}' property='target.Name' action='set' />
 <assign value='source.{PID:PatientName(1).FamilyName.Surname}' property='target.Surname1' action='set' />

@@ -31,7 +31,10 @@ Property HeaderId As %String;
 Property CreatedTS As %TimeStamp;
 
 /// Operation layer status
-Property Status As %String(VALUELIST = ",N/A,PROCESSING,PROCESSED,ERROR") [ InitialExpression = "N/A" ];
+Property Status As %String(VALUELIST = ",N/A,PROCESSING,PROCESSED,ERROR,IGNORED") [ InitialExpression = "N/A" ];
+
+/// Number of retries (running the operation)
+Property Retries As %String [ InitialExpression = 0 ];
 
 /// parent Staging
 Relationship Staging As Staging(%JSONREFERENCE = "ID") [ Cardinality = one, Inverse = Opers ];
@@ -96,6 +99,9 @@ Storage Default
 </Value>
 <Value name="9">
 <Value>Staging</Value>
+</Value>
+<Value name="10">
+<Value>Retries</Value>
 </Value>
 </Data>
 <DataLocation>^DataPipe.Data.OperD</DataLocation>

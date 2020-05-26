@@ -15,10 +15,15 @@ Property Id As %Integer(%JSONINCLUDE = "OUTPUTONLY") [ Calculated, SqlComputeCod
 /// Status
 Property Status As %String(VALUELIST = ",INGESTING,ERROR-INGESTING,STAGING,ERROR-STAGING,OPERATING,DONE,ERROR-OPERATING,ERROR-GENERAL");
 
+/// Ignored
+/// - New occurences of Inbox will not be ingested
+/// - Not will be processed for operation
+Property Ignored As %Boolean [ InitialExpression = 0 ];
+
 /// Created
 Property CreatedTS As %TimeStamp;
 
-/// Created
+/// Updated
 Property UpdatedTS As %TimeStamp;
 
 /// Ref. to last Ingestion
@@ -46,12 +51,18 @@ Property ValidationErrors As %String(MAXLEN = "") [ SqlComputeCode = { set {Vali
 Property OperErrors As %String(MAXLEN = "") [ SqlComputeCode = { set {OperErrors} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastOper->OperErrorsJson", "", {%%ID})
 }, SqlComputed, Transient ];
 
+/// *Calculated* OperRetries (from LastOper). Used in queries from app
+Property OperRetries As %String(MAXLEN = "") [ SqlComputeCode = { set {OperRetries} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastOper->Retries", "0", {%%ID})
+}, SqlComputed, SqlComputeOnChange = %%UPDATE ];
+
 /// Related Ingestions
 Relationship Ingestions As Ingestion(%JSONREFERENCE = "ID") [ Cardinality = many, Inverse = Inbox ];
 
 Index PkIdx On (Source, Flow, MsgId) [ Unique ];
 
 Index StatusIdx On Status [ Type = bitmap ];
+
+Index IgnoredIdx On Ignored [ Type = bitmap ];
 
 Index UpdatedTSIdx On UpdatedTS;
 
@@ -70,7 +81,7 @@ Index ElementIdx On Element;
 /// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Inbox/find
 ClassMethod queryFIND() As %String
 {
-  quit "UpdatedTS, Id, Source, Flow, MsgId, Element, Status, StagingStatus, OperStatus, ValidationErrors, OperErrors "
+  quit "UpdatedTS, Id, Source, Flow, MsgId, Element, Ignored, Status, StagingStatus, OperStatus, ValidationErrors, OperErrors, OperRetries "
 }
 
 /// Get an Inbox record, querying by key attributes
@@ -122,6 +133,20 @@ ClassMethod CalcSqlFieldById(field As %String, default As %String, id As %String
 	quit ret
 }
 
+/// Change ignore status
+Method Ignore() As %Status
+{
+	set ret = $$$OK
+	try {
+		set ..Ignored = '..Ignored
+		$$$ThrowOnError(..%Save())
+		
+	} catch ex {
+		set ret = ex.AsStatus()
+	}
+	quit ret
+}
+
 Storage Default
 {
 <Data name="InboxDefaultData">
@@ -163,6 +188,12 @@ Storage Default
 </Value>
 <Value name="13">
 <Value>OperStatus</Value>
+</Value>
+<Value name="14">
+<Value>Ignored</Value>
+</Value>
+<Value name="15">
+<Value>OperRetries</Value>
 </Value>
 </Data>
 <DataLocation>^DataPipe.Data.InboxD</DataLocation>
