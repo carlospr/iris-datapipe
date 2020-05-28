@@ -3,14 +3,14 @@ Class DataPipe.Test.HL7.Helper Extends %RegisteredObject
 
 /// Generate multiple test ADT HL7 Files
 /// do ##class(DataPipe.Test.HL7.Helper).GenerateFilesHL7ADT(100)
-ClassMethod GenerateFilesHL7ADT(nfiles As %Integer = 100, outputDir As %String = "/app/data/input/", template As %String = "/app/data/ADTA08.hl7", docType As %String = "2.5:ADT_A01") As %Status
+ClassMethod GenerateFilesHL7ADT(nfiles As %Integer = 100, fifoEnabled As %Boolean = 0, outputDir As %String = "/app/data/input/", template As %String = "/app/data/ADTA08.hl7", docType As %String = "2.5:ADT_A01") As %Status
 {
     set ret = $$$OK
 
     try {
         for i=1:1:nfiles {
             // generate random hl7 test file from template
-            $$$ThrowOnError(..GenerateHL7({}, template, docType, .hl7))
+            $$$ThrowOnError(..GenerateHL7({}, fifoEnabled, template, docType, .hl7))
 
             // write hl7 file to test production input directory
             $$$ThrowOnError(hl7.OutputToFile(outputDir_"file"_$tr($zts,",.","")_".hl7"))
@@ -22,13 +22,19 @@ ClassMethod GenerateFilesHL7ADT(nfiles As %Integer = 100, outputDir As %String =
 }
 
 /// Generate a test hl7 file based on input values
-/// - input: DynamicObject which can, optionally, specify properties such as MsgId, PatientId, etc. 
-ClassMethod GenerateHL7(input As %DynamicObject = {{}}, template As %String, docType As %String, Output hl7) As %Status
+/// - input: DynamicObject which can, optionally, specify properties such as MsgId, PatientId, etc.
+/// - fifoEnabled: randomly generate msgid containing "FIFO" (will be treated as FIFO on test production)
+/// - template: template message
+/// - doctype: document type to use 
+ClassMethod GenerateHL7(input As %DynamicObject = {{}}, fifoEnabled As %Boolean = 0, template As %String, docType As %String, Output hl7) As %Status
 {
     set ret = $$$OK
     try {
         // default values for input
         if input.MsgId="" set input.MsgId = $zconvert(##class(%PopulateUtils).StringMin(3,3),"U")_##class(%PopulateUtils).Integer(99999,999999)
+        if fifoEnabled {
+            if $random(2)=0 set input.MsgId="FIFO"_input.MsgId    
+        }
         if input.PatientId="" set input.PatientId = ##class(%PopulateUtils).Integer(99999,999999)
         if input.Name="" set input.Name = ##class(%PopulateUtils).FirstName(1)
         if input.Surname1="" set input.Surname1 = ##class(%PopulateUtils).FirstName()

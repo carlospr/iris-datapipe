@@ -24,7 +24,7 @@ Method OnAfterAllTests() As %Status
 Method SendTestMessage(input As %DynamicObject, target As %String, Output inbox) As %Status
 {
   // create test message
-  set sc = ##class(DataPipe.Test.HL7.Helper).GenerateHL7(input, "/app/data/ADTA08.hl7", "2.5:ADT_A01", .hl7)
+  set sc = ##class(DataPipe.Test.HL7.Helper).GenerateHL7(input, 0, "/app/data/ADTA08.hl7", "2.5:ADT_A01", .hl7)
   do $$$AssertStatusOK(sc, "created test hl7 message")
 
   // send message
