@@ -10,6 +10,8 @@ Method OperationHandler(pRequest As DataPipe.Msg.OperReq, Output pResponse As En
 	set ret = $$$OK
 	try {
 		set inboxObj = pRequest.data.Ingestion.Inbox
+		// reload inbox - in case user has set inbox as ignored in other process (UI)
+		do pRequest.data.Ingestion.Inbox.%Reload()
         set operObj = inboxObj.LastOper
 
 		// update Oper status
@@ -22,29 +24,45 @@ Method OperationHandler(pRequest As DataPipe.Msg.OperReq, Output pResponse As En
         set sc = $classmethod(modelName, "Deserialize", modelData, .modelObj)
         $$$ThrowOnError(sc)
 
-		// perform operation
-		set sc = modelObj.RunOperation(.errorList, .operLog)
-		if $$$ISOK(sc) {
-			// update status
-			set operObj.Status = "PROCESSED"
+		set operLog = ""
+		set operationSC = $$$OK
+
+		// inbox ignored - avoid operation
+        if inboxObj.Ignored {
 			set inboxObj.Status = "DONE"
-		} else {
-			// udpate status
-			set operObj.Status = "ERROR"
-			set inboxObj.Status = "ERROR-OPERATING"
-			
-			$$$LOGERROR($system.Status.GetOneStatusText(sc))
-
-			// serialize errors
-			set operObj.OperErrors = errorList
-			$$$ThrowOnError(operObj.SerializeOperErrors())
-		}	
+			set operObj.Status = "IGNORED"
 		
-		set operObj.OperLog = operLog
-		$$$ThrowOnError(operObj.%Save())
-		$$$ThrowOnError(sc)
+		// not ignored - perfom operation	
+		} else {
+			set operationSC = modelObj.RunOperation(.errorList, .operLog)
+			set operObj.Retries = operObj.Retries + 1
+			if $$$ISOK(operationSC) {
+				set operObj.Status = "PROCESSED"
+				set inboxObj.Status = "DONE"
+			} else {
+				set operObj.Status = "ERROR"
+				set inboxObj.Status = "ERROR-OPERATING"
 
+				// serialize errors
+				set operObj.OperErrors = errorList
+				$$$ThrowOnError(operObj.SerializeOperErrors())
+			}
+		}
+		
+		set inboxObj.UpdatedTS = $zdatetime($horolog,3)
+
+		// append operation log
+		if $isobject(operObj.OperLog) {
+			do operObj.OperLog.MoveToEnd()
+			do operObj.OperLog.CopyFrom(operLog)
+		} else {
+			set operObj.OperLog = operLog
+		}
+
+		$$$ThrowOnError(operObj.%Save())
 		$$$ThrowOnError(inboxObj.%Save())
+		
+		$$$ThrowOnError(operationSC)
 
  	} catch ex {
 		set ret = ex.AsStatus()

@@ -5,6 +5,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 {
 <Routes>
 <Route Url="/resendMessage/:headerId" Method="POST" Call="resendMessage"/>
+<Route Url="/ignore/:id" Method="PUT" Call="ignore"/>
 </Routes>
 }
 
@@ -22,6 +23,24 @@ ClassMethod resendMessage(headerId As %String = "") As %Status
     }
 	
 	return ret
+}
+
+/// Change inbox ignored status
+ClassMethod ignore(id As %String) As %Status
+{
+	set ret = $$$OK
+	try {
+		// open object
+		set obj = ##class(DataPipe.Data.Inbox).%OpenId(id,,.sc)
+		$$$ThrowOnError(sc)
+		
+		// return result
+		write "{""result"": """_obj.Ignore()_"""}"	
+				
+	} catch ex {
+		set ret = ex.AsStatus()
+	}
+	quit ret
 }
 
 }

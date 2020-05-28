@@ -46,7 +46,7 @@ do ##class(%UnitTest.Manager).RunTest(":DataPipe.UnitTest.HL7", "/nodelete")
 # Utils
 Generate 100 sample hl7 files for processing in test production:
 ```objectscript
-do ##class(DataPipe.Test.Helper).GenerateFilesHL7ADT(100)
+do ##class(DataPipe.Test.HL7.Helper).GenerateFilesHL7ADT(100, 1)
 ```
 
 Delete `DataPipe.Data.*` data:

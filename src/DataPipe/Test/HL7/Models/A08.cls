@@ -1,6 +1,8 @@
 Class DataPipe.Test.HL7.Models.A08 Extends (%RegisteredObject, %XML.Adaptor, %JSON.Adaptor, DataPipe.Model)
 {
 
+Property MsgId As %String;
+
 Property PatientId As %String;
 
 Property Name As %String;
@@ -99,7 +101,13 @@ Method Validate(Output errorList As %List) As %Status
 /// Each Business Operation can be used to hold different queues
 Method GetOperation() As %Status
 {
-    Quit "A08 Operation"
+    // use FIFO BO (failure timeout=-1) when MsgId contains FIFO
+    if ..MsgId["FIFO" {
+        quit "FIFO A08 Operation"
+    }
+
+    // use regular BO
+    quit "A08 Operation"
 }
 
 /// Run final operation with the model
@@ -135,7 +143,7 @@ Method RunOperation(Output errorList As %List, Output log As %Stream.Object) As 
         $$$AddLog(log, "Rollback!")
 
         set ret = ex.AsStatus()
-        $$$AddLog(log, $system.Status.GetOneStatusText(ret))
+        $$$AddLog(log, "Error catched: "_$system.Status.GetOneStatusText(ret))
 
         // include exception errors into errorList
         do $system.Status.DecomposeStatus(ret, .errors)
