@@ -55,13 +55,12 @@ Method InitInbox() As %Status
 			set inboxObj = ##class(DataPipe.Data.Inbox).%New()
             set inboxObj.CreatedTS = $zdatetime($horolog,3)
             set inboxObj.UpdatedTS = inboxObj.CreatedTS
-            $$$ThrowOnError(inboxObj.PopulateAttributes(..InboxAttributes))
-
 		} else {
 			// return existing inbox
             set inboxObj.UpdatedTS = $zdatetime($horolog,3)
 		}
         
+        $$$ThrowOnError(inboxObj.PopulateAttributes(..InboxAttributes))
         set ..Inbox = inboxObj
 
     } catch ex {
