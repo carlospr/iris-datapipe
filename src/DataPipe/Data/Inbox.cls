@@ -45,11 +45,11 @@ Property OperStatus As %String(MAXLEN = "") [ SqlComputeCode = { set {OperStatus
 
 /// *Calculated* ValidationErrorsJson (from LastStaging). Used in queries from app
 Property ValidationErrors As %String(MAXLEN = "") [ SqlComputeCode = { set {ValidationErrors} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastStaging->ValidationErrorsJson", "", {%%ID})
-}, SqlComputed, Transient ];
+}, SqlComputed, SqlComputeOnChange = %%UPDATE ];
 
 /// *Calculated* OperErrorsJson (from LastOper). Used in queries from app
 Property OperErrors As %String(MAXLEN = "") [ SqlComputeCode = { set {OperErrors} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastOper->OperErrorsJson", "", {%%ID})
-}, SqlComputed, Transient ];
+}, SqlComputed, SqlComputeOnChange = %%UPDATE ];
 
 /// *Calculated* OperRetries (from LastOper). Used in queries from app
 Property OperRetries As %String(MAXLEN = "") [ SqlComputeCode = { set {OperRetries} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastOper->Retries", "0", {%%ID})
@@ -199,6 +199,12 @@ Storage Default
 </Value>
 <Value name="16">
 <Value>Subject</Value>
+</Value>
+<Value name="17">
+<Value>ValidationErrors</Value>
+</Value>
+<Value name="18">
+<Value>OperErrors</Value>
 </Value>
 </Data>
 <DataLocation>^DataPipe.Data.InboxD</DataLocation>
