@@ -7,6 +7,9 @@ Property Staging As DataPipe.Data.Staging;
 /// Model object
 Property Model As DataPipe.Model;
 
+/// Normalized Model object
+Property NormModel As DataPipe.Model;
+
 /// Oper request that will be sent to Oper layer
 Property OperReq As DataPipe.Msg.OperReq;
 
@@ -61,6 +64,8 @@ Method NormalizeModel() As %Status
     try {
         // normalize
         $$$ThrowOnError(..Model.Normalize(.norm))
+        // save normalized model in context
+        set ..NormModel = norm
         // serialize normalized data
         $$$ThrowOnError(norm.Serialize(.stream))
         // store into staging data
@@ -78,7 +83,7 @@ Method ValidateModel() As %Status
 {
     set ret = $$$OK
     try {
-        set sc = ..Model.Validate(.errorList)
+        set sc = ..NormModel.Validate(.errorList)
         if $$$ISOK(sc) {
             set ..Staging.Status = "VALID"
         } else {
@@ -158,6 +163,9 @@ Storage Default
 </Value>
 <Value name="4">
 <Value>ErrorText</Value>
+</Value>
+<Value name="5">
+<Value>NormModel</Value>
 </Value>
 </Data>
 <DefaultData>StagingManagerContextDefaultData</DefaultData>

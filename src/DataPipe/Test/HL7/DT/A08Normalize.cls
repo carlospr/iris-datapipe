@@ -9,8 +9,7 @@ Parameter TREATEMPTYREPEATINGFIELDASNULL = 0;
 
 XData DTL [ XMLNamespace = "http://www.intersystems.com/dtl" ]
 {
-<transform sourceClass='DataPipe.Test.HL7.Models.A08' targetClass='DataPipe.Test.HL7.Models.A08' create='new' language='objectscript' >
-<assign value='source' property='target' action='set' />
+<transform sourceClass='DataPipe.Test.HL7.Models.A08' targetClass='DataPipe.Test.HL7.Models.A08' create='copy' language='objectscript' >
 <assign value='$case(source.AdministrativeSex, "M":"H", "F":"M", :"")' property='target.AdministrativeSex' action='set' >
 <annotation>Normalize AdministrativeSex values</annotation>
 </assign>
