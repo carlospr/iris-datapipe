@@ -83,11 +83,18 @@ Method Validate(Output errorList As %List) As %Status
         else {
             set yearDOB = $extract($zdate(..DOB,8),1,4)
             if (yearDOB < 1930) $$$AddError(errorList, "V002", "DOB must be greater than 1930")
+            if (yearDOB < 1983) $$$AddError(errorList, "W083", "Warning! Older than 1983")
         }
 
-        // model is invalid if errors
-        if errorList.Count() > 0 {
-			set ret = $$$ERROR($$$GeneralError, "Invalid")
+        // model is invalid if errors (not warnings) found
+        for i=1:1:errorList.Count() {
+            set error = errorList.GetAt(i)
+            set errorCode = error.Code
+
+            // in this sample model, all warnings start with "W"
+            if errorCode'["W" {
+                $$$ThrowStatus($$$ERROR($$$GeneralError, "Invalid"))
+            }
 		}
        
     } catch ex {

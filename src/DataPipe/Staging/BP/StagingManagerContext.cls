@@ -86,18 +86,22 @@ Method ValidateModel() As %Status
         set sc = ..NormModel.Validate(.errorList)
         if $$$ISOK(sc) {
             set ..Staging.Status = "VALID"
+
+            if errorList.Count() > 0 {
+                set ..Staging.Status = "WARNING"
+            }
         } else {
             $$$LOGERROR($system.Status.GetOneStatusText(sc))
             
             // update status
             set ..Staging.Status = "INVALID"
             set ..Staging.Ingestion.Inbox.Status = "ERROR-STAGING"
-
-            // serialize validation errors
-            set ..Staging.ValidationErrors = errorList
-            $$$ThrowOnError(..Staging.SerializeValidationErrors())
         }
-        
+
+        // serialize validation errors
+        set ..Staging.ValidationErrors = errorList
+        $$$ThrowOnError(..Staging.SerializeValidationErrors())
+
     } catch ex {
         set ret = ex.AsStatus()
     }

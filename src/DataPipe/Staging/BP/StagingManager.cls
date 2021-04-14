@@ -49,12 +49,13 @@ XData BPL [ XMLNamespace = "http://www.intersystems.com/bpl" ]
 <code name='Save Data' xpos='200' ypos='750' >
 <![CDATA[ $$$ThrowOnError(context.SaveData())]]>
 </code>
-<if name='Valid?' condition='context.Staging.Status="VALID"' xpos='200' ypos='850' xend='200' yend='1200' >
+<if name='Valid?' condition='((context.Staging.Status="VALID") || (context.Staging.Status="WARNING"))' xpos='200' ypos='850' xend='200' yend='1200' >
+<annotation><![CDATA[Valid Or Warning]]></annotation>
 <true>
-<code name='Build OperReq' xpos='200' ypos='950' >
+<code name='Build OperReq' xpos='335' ypos='1000' >
 <![CDATA[ $$$ThrowOnError(context.BuildOperReq())]]>
 </code>
-<call name='To Oper' target='@process.TargetConfigName' async='1' xpos='200' ypos='1050' >
+<call name='To Oper' target='@process.TargetConfigName' async='1' xpos='335' ypos='1100' >
 <request type='DataPipe.Msg.OperReq' >
 <assign property="callrequest" value="context.OperReq" action="set" />
 </request>

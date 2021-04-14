@@ -78,8 +78,24 @@ Method TestErrorStagingValidation()
     do ..SendTestMessage(input, ..#TargetIngestion, .inbox)
     do $$$AssertEquals(inbox.Status, "ERROR-STAGING")
     do $$$AssertEquals(inbox.LastStaging.Status, "INVALID")
-    do $$$AssertEquals(inbox.LastStaging.ValidationErrorsJson, "[""V002: DOB must be greater than 1930""]")
+    do $$$AssertEquals(inbox.LastStaging.ValidationErrorsJson, "[""V002: DOB must be greater than 1930"",""W083: Warning! Older than 1983""]")
     do $$$AssertEquals(inbox.LastOper, "")
+}
+
+/// DONE but Warning while validating model
+Method TestDoneWarning()
+{
+    set input = { 
+      "MsgId": "DoneWarning",
+      "Name": "Test",
+      "AdministrativeSex": "M",
+      "DOB": "19800301"                   ; warning error. dob < 1983
+    }
+    do ..SendTestMessage(input, ..#TargetIngestion, .inbox)
+    do $$$AssertEquals(inbox.Status, "DONE")
+    do $$$AssertEquals(inbox.LastStaging.Status, "WARNING")
+    do $$$AssertEquals(inbox.LastStaging.ValidationErrorsJson, "[""W083: Warning! Older than 1983""]")
+    do $$$AssertEquals(inbox.LastOper.Status, "PROCESSED")
 }
 
 /// ERROR-OPERATING after error while trying to run operation on the model

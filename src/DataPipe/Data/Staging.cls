@@ -31,7 +31,7 @@ Property HeaderId As %String;
 Property CreatedTS As %TimeStamp;
 
 /// Staging layer status
-Property Status As %String(VALUELIST = ",N/A,VALID,INVALID") [ InitialExpression = "N/A" ];
+Property Status As %String(VALUELIST = ",N/A,VALID,INVALID,WARNING") [ InitialExpression = "N/A" ];
 
 /// parent Ingestion
 Relationship Ingestion As Ingestion(%JSONREFERENCE = "ID") [ Cardinality = one, Inverse = Stagings ];
