@@ -55,12 +55,12 @@ Method SerializeOperErrors() As %Status
 	set ret = $$$OK
 	set jsonArr=[]
 	try {
-    set count = ..OperErrors.Count()
+		set count = ..OperErrors.Count()
 		for i=1:1:count {
-      set code = ..OperErrors.GetAt(i).Code
-      set desc = ..OperErrors.GetAt(i).Desc
-      set jsonError = code_": "_desc
-      do jsonArr.%Push(jsonError)
+			set code = ..OperErrors.GetAt(i).Code
+			set desc = ..OperErrors.GetAt(i).Desc
+			set jsonError = code_": "_desc
+			do jsonArr.%Push(jsonError)
 		}
 		set ..OperErrorsJson = jsonArr.%ToJSON()
 		
