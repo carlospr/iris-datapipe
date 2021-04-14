@@ -16,7 +16,8 @@ USER irisowner
 # download RESTForms2
 # check RESTForms2 repo. it has zpm installation also available!
 WORKDIR /tmp 
-RUN wget https://github.com/intersystems-community/RESTForms2/archive/master.tar.gz
+# use this version, latest on intersystems-community have some breaking differences on OperErrorsJson fields, etc.
+RUN wget https://github.com/isc-afuentes/RESTForms2/archive/master.tar.gz
 RUN tar -zxvf master.tar.gz
 WORKDIR /tmp/RESTForms2-master
 
