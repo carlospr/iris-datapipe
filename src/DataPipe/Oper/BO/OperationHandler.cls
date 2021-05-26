@@ -34,7 +34,7 @@ Method OperationHandler(pRequest As DataPipe.Msg.OperReq, Output pResponse As En
 		
 		// not ignored - perfom operation	
 		} else {
-			set operationSC = modelObj.RunOperation(.errorList, .operLog)
+			set operationSC = modelObj.RunOperation(.errorList, .operLog, ##this)
 			set operObj.Retries = operObj.Retries + 1
 			if $$$ISOK(operationSC) {
 				set operObj.Status = "PROCESSED"

@@ -29,6 +29,8 @@ XData ProductionDefinition
     <Setting Target="Host" Name="ReplyCodeActions">E=R</Setting>
     <Setting Target="Host" Name="RetryInterval">3</Setting>
   </Item>
+  <Item Name="Dummy" Category="" ClassName="EnsLib.File.PassthroughOperation" PoolSize="1" Enabled="false" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
+  </Item>
 </Production>
 }
 

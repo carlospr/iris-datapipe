@@ -119,7 +119,7 @@ Method GetOperation() As %Status
 
 /// Run final operation with the model
 /// This method can be used to persit data from the model to an operational data store
-Method RunOperation(Output errorList As %List, Output log As %Stream.Object) As %Status
+Method RunOperation(Output errorList As %List, Output log As %Stream.Object, bOperation As Ens.BusinessOperation = "") As %Status
 {
     #define AddError(%list, %code, %desc) set error = ##class(DataPipe.Data.ErrorInfo).%New() set error.Code=%code set error.Desc=%desc do %list.Insert(error)
     #define AddLog(%log, %msg) do %log.WriteLine("["_$zdt($h,3)_"] "_%msg)
@@ -144,6 +144,13 @@ Method RunOperation(Output errorList As %List, Output log As %Stream.Object) As 
 
         TCOMMIT
         $$$AddLog(log, "Transaction Commited")
+
+        // you can send messages to other production components (while you are not on an open transaction)
+        if $isobject(bOperation) {
+            set dummyMsg = ##class(Ens.StringContainer).%New()
+            set dummyMsg.StringValue = "Call production component during RunOperation() "
+            $$$ThrowOnError(bOperation.SendRequestAsync("Dummy", dummyMsg))
+        }
 
     } catch ex {
         TROLLBACK 

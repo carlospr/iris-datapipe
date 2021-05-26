@@ -26,7 +26,7 @@ Method GetOperation() As %Status
     Quit $$$ERROR($$$NotImplemented)
 }
 
-Method RunOperation(Output errorList As %List, Output log As %Stream.Object) As %Status
+Method RunOperation(Output errorList As %List, Output log As %Stream.Object, bOperation As Ens.BusinessOperation = "") As %Status
 {
     Quit $$$ERROR($$$NotImplemented)
 }
