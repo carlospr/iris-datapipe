@@ -112,7 +112,19 @@ Method ValidateModel() As %Status
 /// Save data
 Method SaveData() As %Status
 {
-    quit ..Staging.%Save(1)
+    set ret = $$$OK
+    try {
+        // save actual staging data
+        $$$ThrowOnError(..Staging.%Save(1))
+        
+        // force dummy inbox update to re-calculate all calculated properties
+        set id = ..Staging.Ingestion.Inbox.%Id()
+        &sql(update DataPipe_Data.Inbox set UpdatedTS = UpdatedTS where %id=:id)
+
+    } catch ex {
+        set ret = ex.AsStatus()
+    }
+    quit ret
 }
 
 /// 
