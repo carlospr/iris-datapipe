@@ -20,7 +20,7 @@ ClassMethod RemoveData(pDaysToKeep As %Integer = 30) As %Status
     #define HasToBeDeleted(%inbox) ($isobject(%inbox) && (%inbox.Ignored || (%inbox.Status = "DONE")))
 
     set tSC = $$$OK
-    set %tDoNotDeleteDate = $zdate(+$horolog - pDaysToKeep, 3)
+    set %tDoNotDeleteDate = $zdate(+$horolog - pDaysToKeep, 3)_" 23:59:59"
 
     try {
         TSTART
