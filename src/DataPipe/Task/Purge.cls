@@ -20,7 +20,7 @@ ClassMethod RemoveDataPipeInfo(pDaysToKeep As %Integer = 30) As %Status
     #define HasToBeDeleted(%inbox) ($isobject(%inbox) && (%inbox.Ignored || (%inbox.Status = "DONE")))
 
     set tSC = $$$OK
-    set %tDoNotDeleteDate = $zdt($h - pDaysToKeep _ ",0", 3)
+    set %tDoNotDeleteDate = $zdate(+$horolog - pDaysToKeep, 3)
 
     try {
         TSTART
