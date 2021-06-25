@@ -9,13 +9,13 @@ Property DaysToKeep As %Integer [ InitialExpression = 30 ];
 /// Task
 Method OnTask() As %Status
 {
-    quit ##class(DataPipe.Util.DataPipeUtils).RemoveDataPipeInfo(..DaysToKeep)
+    quit ..RemoveData(..DaysToKeep)
 }
 
 /// Purge DataPipe data. Keeps data generated in the last <i>DaysToKeep</i> days.
 /// Param <b>pDaysToKeep</b>: Number of days to keep in the database
-/// Example: zw ##class(DataPipe.Util.DataPipeUtils).RemoveDataPipeInfo(1)
-ClassMethod RemoveDataPipeInfo(pDaysToKeep As %Integer = 30) As %Status
+/// Example: zw ##class(DataPipe.Task.Purge).RemoveData(1)
+ClassMethod RemoveData(pDaysToKeep As %Integer = 30) As %Status
 {
     #define HasToBeDeleted(%inbox) ($isobject(%inbox) && (%inbox.Ignored || (%inbox.Status = "DONE")))
 
