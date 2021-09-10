@@ -30,45 +30,37 @@ Method OnTask() As %Status
 ///   do ##class(DataPipe.Task.Purge).DeleteData(1) ; keep 1 day of data
 ClassMethod DeleteData(pDaysToKeep As %Integer = 30) As %Status
 {
-    #define HasToBeDeleted(%inbox) ($isobject(%inbox) && (%inbox.Ignored || (%inbox.Status = "DONE")))
-
     set ret = $$$OK
     set %tDoNotDeleteDate = $zdate(+$horolog - pDaysToKeep, 3)_" 23:59:59"
 
     try {
         set (ntotal, ndeleted) = 0
 
-        TSTART
-        &sql(DECLARE cInbox CURSOR FOR
-                select ID into :%tID
-                from DataPipe_Data.Inbox
-                where CreatedTS < :%tDoNotDeleteDate
-                order by CreatedTS, ID)
+        set select = "select ID "
+        set from = "from DataPipe_Data.Inbox "
+        set where = "where CreatedTS < ? and (Ignored = 1 or Status = 'DONE') "
+        set orderBy = "order by CreatedTS, ID "
 
-        &sql(OPEN cInbox)
-		quit:(SQLCODE '= 0)
+        set sql = select _ from _ where _ orderBy
 
-        for {
-            &sql(FETCH cInbox)
-            quit:(SQLCODE '= 0)
-            set ntotal = ntotal + 1
+        set statement = ##class(%SQL.Statement).%New()
+        $$$ThrowOnError(statement.%Prepare(sql))
 
-            set inboxItem = ##class(DataPipe.Data.Inbox).%OpenId(%tID)
+        set result = statement.%Execute(%tDoNotDeleteDate)
+        while result.%Next() {
+            
+            set id = result.%Get("ID")
+            set inboxItem = ##class(DataPipe.Data.Inbox).%OpenId(id)
 
-            if $$$HasToBeDeleted(inboxItem) {
-                // delete Ingestions->Stagings->Opers
-                $$$ThrowOnError(..DeleteIngestions(inboxItem.Ingestions))
-                // delete Inbox
-				$$$ThrowOnError(##class(DataPipe.Data.Inbox).%DeleteId(inboxItem.%Id()))
-                set ndeleted = ndeleted + 1
-            }
+            // delete Ingestions->Stagings->Opers
+            $$$ThrowOnError(..DeleteIngestions(inboxItem.Ingestions))
+            // delete Inbox
+            $$$ThrowOnError(##class(DataPipe.Data.Inbox).%DeleteId(inboxItem.%Id()))
+            set ndeleted = ndeleted + 1
         }
-        &sql(CLOSE cInbox)
-        TCOMMIT
         do ..Log("Total="_ntotal_", Deleted="_ndeleted_$$$NL)
 
     } catch ex {
-        TROLLBACK
         set ret = ex.AsStatus()
         do ..Log("<ERROR> DeleteData: "_$system.Status.GetOneErrorText(ret))
     }
