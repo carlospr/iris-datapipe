@@ -13,7 +13,7 @@ Parameter FORMORDERBY As %String = "Id";
 Property Id As %Integer(%JSONINCLUDE = "OUTPUTONLY") [ Calculated, SqlComputeCode = { set {*}={%%ID}}, SqlComputed ];
 
 /// Model class name 
-Property ModelName As %String;
+Property ModelName As %String(MAXLEN="");
 
 /// Model serialized data
 Property ModelData As %Stream.GlobalCharacter;
