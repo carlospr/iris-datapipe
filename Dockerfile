@@ -1,4 +1,4 @@
-ARG IMAGE=store/intersystems/irishealth-community:2021.1.0.215.3
+ARG IMAGE=containers.intersystems.com/intersystems/irishealth-community:2022.1.0.209.0
 FROM $IMAGE
 
 USER root
