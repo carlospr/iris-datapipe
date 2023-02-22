@@ -8,31 +8,13 @@ Want to contribute to this project? See [CONTRIB.md](./CONTRIB.md)
 * Have a look at [CONTRIB.md](./CONTRIB.md) to build your local development environment (Docker).
 * Also, check out the Angular UI project at [datapipeUI](https://github.com/intersystems-ib/iris-datapipeUI).
 
-
-# Requirements
-* InterSystems IRIS
-* [RESTForms2](https://github.com/intersystems-community/RESTForms2)
-
 # Installation
-Download repository:
+1) Install [IPM package manager](https://github.com/intersystems/ipm) if you don't have already done it.
+2) Create a new namespace (e..g `DPIPE`)
+3) Switch to the namespace you want to install DataPipe.
+4) Install DataPipe using ipm:
+
 ```
-cd /tmp
-git clone https://github.com/intersystems-ib/iris-datapipe
-```
-
-Install:
-```objectscript
-// load installer
-do $SYSTEM.OBJ.Load("/tmp/iris-datapipe/src/DataPipe/Installer.cls", "ck")
-
-// set installer options
-// -- namespace to install
-set vars("Namespace")="DPIPE"
-// -- web application name (REST API)
-set vars("WebApp")="/dpipe/api"
-// -- path to source code
-set vars("SourcePath")="/tmp/iris-datapipe/src/"
-
-// run installer
-do ##class(DataPipe.Installer).Run(.vars)
+DPIPE> zpm
+zpm:TEST> install iris-datapipe
 ```

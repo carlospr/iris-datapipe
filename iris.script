@@ -1,0 +1,26 @@
+    // unexpire passwords for dev mode
+    new $namespace
+    set $namespace = "%SYS"
+    do ##class(Security.Users).UnExpireUserPasswords("*")
+
+    // create ns for dev environment
+    do $SYSTEM.OBJ.Load("/opt/irisapp/Installer.cls", "ck") 
+    
+    set vars("Namespace")="DPIPE" 
+    set vars("DataDBPath")="/opt/dpipe/db/DATA" 
+    set vars("CodeDBPath")="/opt/dpipe/db/CODE"
+    do ##class(App.Installer).CreateNamespace(.vars)
+
+    // install DataPipe (zpm)
+    set $namespace = "DPIPE"
+    zpm "load -verbose /opt/irisapp/"
+
+    // modify restforms2 abstract: convert to UTF8 and HandleCorsRequest (useful for dev environment)
+    do $system.OBJ.Load("/opt/irisapp/src/Form/REST/Abstract.cls", "ck") 
+    
+    // auto start interop production
+    set production = "DataPipe.Test.Production"
+    set ^Ens.Configuration("csp","LastProduction") = production
+    do ##class(Ens.Director).SetAutoStart(production)
+
+    halt
