@@ -45,7 +45,7 @@ Index StagingIndex On Staging;
 /// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Oper/find
 ClassMethod queryFIND() As %String
 {
-  quit "Id, CreatedTS, HeaderId, Status, OperErrorsJson "
+  quit "Id, CreatedTS, HeaderId, Status, OperErrorsJson JSON@OperErrorsJson "
 }
 
 /// Serialize oper errors. Serialized errors will be used in UI.
