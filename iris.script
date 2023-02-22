@@ -18,6 +18,9 @@
     // modify restforms2 abstract: convert to UTF8 and HandleCorsRequest (useful for dev environment)
     do $system.OBJ.Load("/opt/irisapp/src/Form/REST/Abstract.cls", "ck") 
     
+    // install webterminal
+    zpm "install webterminal"
+
     // auto start interop production
     set production = "DataPipe.Test.Production"
     set ^Ens.Configuration("csp","LastProduction") = production
