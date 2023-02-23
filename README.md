@@ -18,7 +18,7 @@ do ##class(DataPipe.Test.HL7.Helper).GenerateFilesHL7ADT(100)
 
 * Checkout interoperability production [DataPipe.Test.Production](http://localhost:52773/csp/dpipe/EnsPortal.ProductionConfig.zen?PRODUCTION=DataPipe.Test.Production).
 
-## DataPipeUI
+## DataPipeUI
 You can use [datapipeUI](https://github.com/intersystems-ib/iris-datapipeUI) as a user interface:
 
 1. In other directory, clone [datapipeUI](https://github.com/intersystems-ib/iris-datapipeUI) repository
