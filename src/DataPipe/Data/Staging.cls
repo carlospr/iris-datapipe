@@ -45,7 +45,7 @@ Index IngestionIndex On Ingestion;
 /// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Staging/find
 ClassMethod queryFIND() As %String
 {
-  quit "Id, CreatedTS, HeaderId, Status, ValidationErrorsJson "
+  quit "Id, CreatedTS, HeaderId, Status, ValidationErrorsJson JSON@ValidationErrorsJson"
 }
 
 /// Serialize validation errors. Serialized errors will be used in UI.

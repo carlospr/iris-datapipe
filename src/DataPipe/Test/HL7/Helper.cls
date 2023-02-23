@@ -39,7 +39,7 @@ ClassMethod GenerateHL7(input As %DynamicObject = {{}}, fifoEnabled As %Boolean 
         if input.Name="" set input.Name = ##class(%PopulateUtils).FirstName(1)
         if input.Surname1="" set input.Surname1 = ##class(%PopulateUtils).FirstName()
         if input.Surname2="" set input.Surname2 = ##class(%PopulateUtils).LastName()
-        if input.DOB="" set input.DOB = ##class(DataPipe.Test.HL7.Functions).DateToHL7Date(##class(%PopulateUtils).Date($horolog-(365*40)))
+        if input.DOB="" set input.DOB = ##class(DataPipe.Test.HL7.Functions).DateToHL7Date(##class(%PopulateUtils).Date($horolog-(365*50)))
         if input.AdministrativeSex="" set input.AdministrativeSex = ##class(%PopulateUtils).ValueList(",M,F,")
         if input.SSN="" set input.SSN = ##class(%PopulateUtils).SSN()
         if input.VisitNumber="" set input.VisitNumber = ##class(%PopulateUtils).ValueList(",O,I,E")_##class(%PopulateUtils).Integer(99999,999999)
