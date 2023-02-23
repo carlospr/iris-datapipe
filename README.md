@@ -61,7 +61,7 @@ After defining your model, you can develop your interoperability production usin
 
 You need to implement an **Ingestion process** which must provide:
 * `Input > InboxAttributes` transformation: here you extract the attributes that describe your input data. You will be able to search data using these attributes.
-* `Input > Model transformation` transformation: transform your incoming data into the DataPipe model you have previously defined.
+* `Input > Model` transformation: transform your incoming data into the DataPipe model you have previously defined.
 
 Rest of the components are provided by DataPipe and they will call your model methods.
 
