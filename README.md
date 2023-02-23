@@ -69,7 +69,7 @@ You can have a look at a full example in [DataPipe.Test.Production.cls](src/Data
 
 # Installation
 1) Install [IPM package manager](https://github.com/intersystems/ipm) if you don't have already done it.
-2) Create a new namespace (e..g `DPIPE`)
+2) Create a new namespace (e.g. `DPIPE`)
 3) Switch to the namespace you want to install DataPipe.
 4) Install DataPipe using ipm:
 
