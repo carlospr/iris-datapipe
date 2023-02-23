@@ -75,7 +75,7 @@ You can have a look at a full example in [DataPipe.Test.Production.cls](src/Data
 
 ```
 DPIPE> zpm
-zpm:TEST> install iris-datapipe
+zpm:DPIPE> install iris-datapipe
 ```
 
 Want to contribute to this project? See [CONTRIB.md](./CONTRIB.md)
