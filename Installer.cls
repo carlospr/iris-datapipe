@@ -4,11 +4,11 @@ Class App.Installer
 XData CreateNamespaceManifest [ XMLNamespace = INSTALLER ]
 {
 <Manifest> 
-    <Log Text="Creating namespace ${Namespace}" Level="0"/> 
+    <Log Text="Creating namespace ${Namespace}" Level="0"/>
     <Namespace Name="${Namespace}" Create="yes" Ensemble=""> 
         <Configuration> 
-            <Database Name="${Namespace}-DATA" Dir="${DataDBPath}" Create="yes" MountRequired="true" Resource="%DB_DEFAULT" PublicPermissions="RW" MountAtStartup="true"/> 
-            <Database Name="${Namespace}-APP" Dir="${CodeDBPath}" Create="yes" MountRequired="true" Resource="%DB_DEFAULT" PublicPermissions="RW" MountAtStartup="true"/> 
+            <Database Name="${Namespace}-DATA" Dir="${DataDBPath}" Create="yes" MountRequired="true" Resource="%DB_${Namespace}" PublicPermissions="RW" MountAtStartup="true"/> 
+            <Database Name="${Namespace}-APP" Dir="${CodeDBPath}" Create="yes" MountRequired="true" Resource="%DB_${Namespace}" PublicPermissions="RW" MountAtStartup="true"/> 
         </Configuration>
     </Namespace>
 </Manifest>
