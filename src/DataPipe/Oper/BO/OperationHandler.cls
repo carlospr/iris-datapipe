@@ -5,7 +5,9 @@ Parameter ADAPTER;
 
 Parameter INVOCATION = "Queue";
 
-Method OperationHandler(pRequest As DataPipe.Msg.OperReq, Output pResponse As Ens.Response) As %Status
+Method OperationHandler(
+	pRequest As DataPipe.Msg.OperReq,
+	Output pResponse As Ens.Response) As %Status
 {
 	set ret = $$$OK
 	try {

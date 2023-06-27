@@ -126,7 +126,9 @@ ClassMethod DeleteOperations(operations As %RelationshipObject(ELEMENTTYPE="Data
 }
 
 /// Log a text message
-ClassMethod Log(pText As %String, ByRef pInfo)
+ClassMethod Log(
+	pText As %String,
+	ByRef pInfo)
 {
 	set tText = $zdt($h,3)_": "_pText
 	write !,tText

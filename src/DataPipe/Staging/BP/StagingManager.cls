@@ -6,7 +6,9 @@ Property TargetConfigName As %String;
 
 Parameter SETTINGS = "TargetConfigName:Basic:selector?context={Ens.ContextSearch/ProductionItems?targets=1&productionName=@productionId}";
 
-ClassMethod OnGetConnections(ByRef pArray As %String, pItem As Ens.Config.Item)
+ClassMethod OnGetConnections(
+	ByRef pArray As %String,
+	pItem As Ens.Config.Item)
 {
   Do pItem.PopulateModifiedSettings()
 	Set (tValue,tIndex)="" For {

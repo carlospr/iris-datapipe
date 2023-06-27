@@ -6,7 +6,9 @@ Method Serialize(Output stream) As %Status
     Quit $$$ERROR($$$NotImplemented)
 }
 
-ClassMethod Deserialize(stream As %Stream.Object, Output obj) As %Status
+ClassMethod Deserialize(
+	stream As %Stream.Object,
+	Output obj) As %Status
 {
     Quit $$$ERROR($$$NotImplemented)
 }
@@ -26,7 +28,10 @@ Method GetOperation() As %Status
     Quit $$$ERROR($$$NotImplemented)
 }
 
-Method RunOperation(Output errorList As %List, Output log As %Stream.Object, bOperation As Ens.BusinessOperation = "") As %Status
+Method RunOperation(
+	Output errorList As %List,
+	Output log As %Stream.Object,
+	bOperation As Ens.BusinessOperation = "") As %Status
 {
     Quit $$$ERROR($$$NotImplemented)
 }
