@@ -6,8 +6,8 @@ Class DataPipe.Test.HL7.Helper Extends %RegisteredObject
 ClassMethod GenerateFilesHL7ADT(
 	nfiles As %Integer = 100,
 	fifoEnabled As %Boolean = 0,
-	outputDir As %String = "/Users/grongier/git/datapipe/iris-datapipe/data/input/",
-	template As %String = "/Users/grongier/git/datapipe/iris-datapipe/data/ADTA08.hl7",
+	outputDir As %String = "/app/iris-datapipe/data/input/",
+	template As %String = "/app/iris-datapipe/data/ADTA08.hl7",
 	docType As %String = "2.5:ADT_A01") As %Status
 {
     set ret = $$$OK
