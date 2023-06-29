@@ -1,2 +1,7 @@
 *.log
 data/input/*.hl7
+# Python stuff:
+*.pyc
+*.pyo
+# virtualenv
+.venv

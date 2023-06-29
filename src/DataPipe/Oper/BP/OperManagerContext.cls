@@ -41,11 +41,19 @@ Method DeserializeModel() As %Status
 {
     set ret = $$$OK
     try {
-        set modelData = ..Oper.Staging.ModelNormData
-        set modelName = ..Oper.Staging.Ingestion.ModelName
-        set sc = $classmethod(modelName, "Deserialize", modelData, .obj)
-        $$$ThrowOnError(sc)
-        set ..Model = obj
+        if ..Oper.Staging.Ingestion.ModelIsPython {
+            // Set python path
+            do ##class(DataPipe.Helper).SetPythonPath(..Oper.Staging.Ingestion.ModelClassPath)
+            set ..Model = ##class(DataPipe.Helper).GetPythonInstance(..Oper.Staging.Ingestion.ModelModule, ..Oper.Staging.Ingestion.ModelName)
+            do ..Model.Deserialize(..Oper.Staging.ModelNormData)
+
+        } else {
+            set modelData = ..Oper.Staging.ModelNormData
+            set modelName = ..Oper.Staging.Ingestion.ModelName
+            set sc = $classmethod(modelName, "Deserialize", modelData, .obj)
+            $$$ThrowOnError(sc)
+            set ..Model = obj
+        }
          
     } catch ex {
         set ret = ex.AsStatus()

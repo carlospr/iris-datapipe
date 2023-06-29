@@ -44,12 +44,19 @@ Method DeserializeModel() As %Status
 {
     set ret = $$$OK
     try {
-        set modelData = ..Staging.Ingestion.ModelData
-        set modelName = ..Staging.Ingestion.ModelName
-        set sc = $classmethod(modelName, "Deserialize", modelData, .obj)
-        $$$ThrowOnError(sc)
-        set ..Model = obj
-         
+        if ..Staging.Ingestion.ModelIsPython {
+            // Set python path
+            do ##class(DataPipe.Helper).SetPythonPath(..Staging.Ingestion.ModelClassPath)
+            set ..Model = ##class(DataPipe.Helper).GetPythonInstance(..Staging.Ingestion.ModelModule, ..Staging.Ingestion.ModelName)
+            do ..Model.Deserialize(..Staging.Ingestion.ModelData)
+
+        } else {
+            set modelData = ..Staging.Ingestion.ModelData
+            set modelName = ..Staging.Ingestion.ModelName
+            set sc = $classmethod(modelName, "Deserialize", modelData, .obj)
+            $$$ThrowOnError(sc)
+            set ..Model = obj
+        }
     } catch ex {
         set ret = ex.AsStatus()
     }
@@ -62,14 +69,24 @@ Method NormalizeModel() As %Status
 {
     set ret = $$$OK
     try {
-        // normalize
-        $$$ThrowOnError(..Model.Normalize(.norm))
-        // save normalized model in context
-        set ..NormModel = norm
-        // serialize normalized data
-        $$$ThrowOnError(norm.Serialize(.stream))
-        // store into staging data
-        do ..Staging.ModelNormData.CopyFrom(stream)
+        if ..Staging.Ingestion.ModelIsPython {
+            set ..NormModel = ##class(%SYS.Python).%New()
+            // normalize
+            set ..NormModel = ..Model.Normalize()
+            // serialize normalized data
+            set stream = ..NormModel.Serialize()
+            // store into staging data
+            do ..Staging.ModelNormData.CopyFrom(stream)
+        } else {
+            // normalize
+            $$$ThrowOnError(..Model.Normalize(.norm))
+            // save normalized model in context
+            set ..NormModel = norm
+            // serialize normalized data
+            $$$ThrowOnError(norm.Serialize(.stream))
+            // store into staging data
+            do ..Staging.ModelNormData.CopyFrom(stream)
+        }
 
     } catch ex {
         set ret = ex.AsStatus()
@@ -83,10 +100,26 @@ Method ValidateModel() As %Status
 {
     set ret = $$$OK
     try {
-        set sc = ..NormModel.Validate(.errorList)
+        set sc = $$$OK
+        if ..Staging.Ingestion.ModelIsPython {
+            try {
+                set errorList = ..NormModel.validate()
+                // Embedded python have a clunky way of handeling list
+                // I have tried build %ListOfDataTypes from python and it does not work
+                // So I have to build the list here
+                set list = ##class(%ListOfDataTypes).%New()
+                for i=1:1:errorList.Count() {
+                    do list.Insert(errorList.GetAt(i))
+                }
+                set errorList = list
+            } catch ex {
+                set sc = ex.AsStatus()
+            }
+        } else {
+            set sc = ..NormModel.Validate(.errorList)
+        }
         if $$$ISOK(sc) {
             set ..Staging.Status = "VALID"
-
             if errorList.Count() > 0 {
                 set ..Staging.Status = "WARNING"
             }

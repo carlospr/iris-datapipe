@@ -12,8 +12,17 @@ Parameter FORMORDERBY As %String = "Id";
 /// *Calculated* Id. %ID value projected to JSON
 Property Id As %Integer(%JSONINCLUDE = "OUTPUTONLY") [ Calculated, SqlComputeCode = { set {*}={%%ID}}, SqlComputed ];
 
+/// Model Is Python
+Property ModelIsPython As %Boolean(%JSONINCLUDE = "NONE") [ InitialExpression = 0 ];
+
+/// Model class name
+Property ModelModule As %String(%JSONINCLUDE = "NONE", MAXLEN = "");
+
+/// Model Module path
+Property ModelClassPath As %String(%JSONINCLUDE = "NONE", MAXLEN = "");
+
 /// Model class name 
-Property ModelName As %String(MAXLEN="");
+Property ModelName As %String(MAXLEN = "");
 
 /// Model serialized data
 Property ModelData As %Stream.GlobalCharacter;
@@ -80,6 +89,15 @@ Storage Default
 </Value>
 <Value name="12">
 <Value>HeaderId</Value>
+</Value>
+<Value name="13">
+<Value>ModelIsPython</Value>
+</Value>
+<Value name="14">
+<Value>ModelModule</Value>
+</Value>
+<Value name="15">
+<Value>ModelClassPath</Value>
 </Value>
 </Data>
 <DataLocation>^DataPipe.Data.IngestionD</DataLocation>

@@ -21,10 +21,18 @@ Method OperationHandler(
 		$$$ThrowOnError(operObj.%Save())
 
 		// deserialize model
-		set modelData = pRequest.data.ModelNormData
-        set modelName = pRequest.data.Ingestion.ModelName
-        set sc = $classmethod(modelName, "Deserialize", modelData, .modelObj)
-        $$$ThrowOnError(sc)
+        if pRequest.data.Ingestion.ModelIsPython {
+            // Set python path
+            do ##class(DataPipe.Helper).SetPythonPath(pRequest.data.Ingestion.ModelClassPath)
+            set modelObj = ##class(DataPipe.Helper).GetPythonInstance(pRequest.data.Ingestion.ModelModule, pRequest.data.Ingestion.ModelName)
+            do modelObj.Deserialize(pRequest.data.ModelNormData)
+
+        } else {
+			set modelData = pRequest.data.ModelNormData
+			set modelName = pRequest.data.Ingestion.ModelName
+			set sc = $classmethod(modelName, "Deserialize", modelData, .modelObj)
+			$$$ThrowOnError(sc)
+		}
 
 		set operLog = ""
 		set operationSC = $$$OK
