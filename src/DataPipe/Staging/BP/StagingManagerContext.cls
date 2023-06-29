@@ -114,6 +114,9 @@ Method ValidateModel() As %Status
                 set errorList = list
             } catch ex {
                 set sc = ex.AsStatus()
+                // set the error list based on the exception
+                set errorList = ##class(%ListOfDataTypes).%New()
+                do errorList.Insert($system.Status.GetOneStatusText(sc))
             }
         } else {
             set sc = ..NormModel.Validate(.errorList)
