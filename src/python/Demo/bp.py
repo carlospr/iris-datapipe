@@ -33,7 +33,7 @@ class HL7Ingestion(IngestionProcess):
 if __name__ == '__main__':
     bp = HL7Ingestion()
     import iris
-    msg = iris.cls('EnsLib.HL7.Message').ImportFromFile('/Users/grongier/git/datapipe/iris-datapipe/data/file666524297174615.hl7')
+    msg = iris.cls('EnsLib.HL7.Message').ImportFromFile('/Users/grongier/git/datapipe/iris-datapipe/data/file6665459469713881531.hl7')
     bp.on_message(msg)
     bp.model = bp.model.Normalize()
     erro = bp.model.Validate()

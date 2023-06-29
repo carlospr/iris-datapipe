@@ -1,6 +1,5 @@
 from datetime import datetime
-from DataPipe._model import _Model
-from DataPipe import ModelException
+from DataPipe._model import _Model, ModelException
 
 from grongier.pex import BusinessProcess
 

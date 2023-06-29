@@ -2,6 +2,9 @@ import abc
 
 import iris
 
+class ModelException(Exception):
+    pass
+
 class _Model(metaclass=abc.ABCMeta):
 
     error_list = []
@@ -36,7 +39,8 @@ class _Model(metaclass=abc.ABCMeta):
         return self.normalize()
     
     def Validate(self):
-        return self.validate()
+        self.validate()
+        return self.error_list
     
     def RunOperation(self,error,log,operation_instance):
         try:

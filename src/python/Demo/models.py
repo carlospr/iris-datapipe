@@ -17,7 +17,7 @@ class A08(Model):
 
     def serialize(self):
         # convert this object to a json string
-        return json.dumps(self.__dict__)
+        return json.dumps(self.__dict__, indent=4)
     
     def deserialize(self, json_str):
         # populate this object from a json string
