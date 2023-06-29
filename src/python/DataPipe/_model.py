@@ -2,9 +2,6 @@ import abc
 
 import iris
 
-class ModelException(Exception):
-    pass
-
 class _Model(metaclass=abc.ABCMeta):
 
     error_list = []

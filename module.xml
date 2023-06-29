@@ -3,7 +3,7 @@
   <Document name="iris-datapipe.ZPM">
     <Module>
       <Name>iris-datapipe</Name>
-      <Version>0.0.1</Version>
+      <Version>0.0.2</Version>
       <Description>DataPipe an interoperability framework to ingest data in InterSystems IRIS in a flexible way.</Description>
       <Keywords>datapipe ingestion staging validation</Keywords>
       <Author>
@@ -19,6 +19,13 @@
           <Version>>=1.0.8</Version>
         </ModuleReference>
       </Dependencies>
+      <Dependencies>
+        <ModuleReference>
+          <Name>pex-embbeded-python</Name>
+          <Version>>=2.0.0</Version>
+        </ModuleReference>
+      </Dependencies>
+      <FileCopy Name="src/python/DataPipe" Target="${libdir}python/DataPipe/"/>
       <SourcesRoot>src</SourcesRoot>
       <Resource Name="DataPipe.PKG"/>
       <CSPApplication 

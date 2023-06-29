@@ -5,3 +5,10 @@ data/input/*.hl7
 *.pyo
 # virtualenv
 .venv
+# dist
+dist
+# build
+build
+# eggs
+*.egg
+*.egg-info
