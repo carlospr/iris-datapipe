@@ -116,7 +116,10 @@ Method ValidateModel() As %Status
                 set sc = ex.AsStatus()
                 // set the error list based on the exception
                 set errorList = ##class(%ListOfDataTypes).%New()
-                do errorList.Insert($system.Status.GetOneStatusText(sc))
+                set err = ##class(DataPipe.Data.ErrorInfo).%New()
+                set err.Code = "PYTHON-VALIDATION-ERROR"
+                set err.Desc = $system.Status.GetOneStatusText(sc)
+                do errorList.Insert(err)
             }
         } else {
             set sc = ..NormModel.Validate(.errorList)
