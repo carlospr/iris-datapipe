@@ -1,4 +1,4 @@
-from DataPipe import Model, ModelException
+from DataPipe import Model
 from dataclasses import dataclass
 import json
 import iris
@@ -20,8 +20,10 @@ class A08(Model):
         return json.dumps(self.__dict__, indent=4)
     
     def deserialize(self, json_str):
-        # populate this object from a json string
-        self.__dict__ = json.loads(json_str)
+        # populate each attr of this object from a json string
+        json_dict = json.loads(json_str)
+        for key in json_dict:
+            setattr(self, key, json_dict[key])
 
     def normalize(self):
         # normalize this object
@@ -32,8 +34,7 @@ class A08(Model):
         self.administrative_sex = conversion.get(administrative_sex, "")
         # for demo purposes raise an exception if name is Alfred or James or Kevin
         if self.name.upper() in ["ALFRED","JAMES","KEVIN"]:
-            raise ModelException("Name is not valid")
-        return self
+            raise Exception("Name is not valid")
         
     def validate(self):
         # create an iris.DataPipe.Data.ErrorInfo for each failed validation
@@ -48,11 +49,10 @@ class A08(Model):
                 self.add_error("V002","DOB must be greater than 1930")
             if year > 1983:
                 self.add_error("W083","Warning! Older than 1983")
-
         # model is invalid if errors (not warnings) found
         for error in self.error_list:
             if "V" in error.Code[0]:
-                raise ModelException("Model is invalid")
+                raise Exception("Model is invalid")
         return self.error_list
     
     def operation(self, operation_instance):

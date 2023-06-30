@@ -3,7 +3,9 @@ import abc
 import iris
 
 class ModelException(Exception):
-    pass
+    def __init__(self, message, errors):
+        super().__init__(message)
+        self.errors = errors
 
 class _Model(metaclass=abc.ABCMeta):
 
@@ -31,6 +33,7 @@ class _Model(metaclass=abc.ABCMeta):
     
     def Deserialize(self,input):
         string = ""
+        self.error_list = []
         while not input.AtEnd:
             string += input.Read(1024)
         return self.deserialize(string)
@@ -38,8 +41,11 @@ class _Model(metaclass=abc.ABCMeta):
     def Normalize(self):
         return self.normalize()
     
-    def Validate(self):
-        self.validate()
+    def Validation(self):
+        try:
+            self.validate()
+        except Exception as e:
+            self.add_error("VALIDATION",str(e))
         return self.error_list
     
     def RunOperation(self,error,log,operation_instance):

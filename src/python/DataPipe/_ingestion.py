@@ -1,5 +1,5 @@
 from datetime import datetime
-from DataPipe._model import _Model, ModelException
+from ._model import _Model, ModelException
 
 from grongier.pex import BusinessProcess
 
@@ -77,7 +77,6 @@ class _Ingestion(BusinessProcess):
 
     def save_data(self):
         self.inbox._Save(1)
-        self.ingestion._Save(1)
 
     def build_staging_req(self):
         self.staging_req = iris.cls('DataPipe.Msg.StagingReq')._New()
