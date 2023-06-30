@@ -17,7 +17,9 @@ class A08(Model):
 
     def serialize(self):
         # convert this object to a json string
-        return json.dumps(self.__dict__, indent=4)
+        # export all attributes except error_list and log_list
+        export = {key: value for key, value in self.__dict__.items() if key not in ["error_list","log_list"]}
+        return json.dumps(export, indent=4)
     
     def deserialize(self, json_str):
         # populate each attr of this object from a json string
