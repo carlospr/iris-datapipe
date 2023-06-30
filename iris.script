@@ -30,6 +30,5 @@
     // auto start interop production
     set production = "DataPipe.Test.Production"
     set ^Ens.Configuration("csp","LastProduction") = production
-    do ##class(Ens.Director).SetAutoStart(production)
 
     halt
