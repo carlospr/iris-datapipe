@@ -65,24 +65,53 @@ class _Model(metaclass=abc.ABCMeta):
     ## Public Methods for Python
     @abc.abstractmethod
     def serialize(self):
+        """
+        Must be implemented by the subclass.
+        It should return a string representation of the object.
+        For example, a JSON string.
+        """
         pass
 
     @abc.abstractmethod
     def deserialize(self,input):
+        """
+        Must be implemented by the subclass.
+        It should return a new instance of the object.
+        From the string representation of the object.
+        For example, a JSON string.
+        """
         pass
 
     @abc.abstractmethod
     def normalize(self):
+        """
+        Must be implemented by the subclass.
+        It should update the object to a normalized state.
+        With the data normalized.
+        """
         pass
 
     @abc.abstractmethod
     def validate(self):
+        """
+        Must be implemented by the subclass.
+        It should return a new instance of the object.
+        With the data validated.
+        """
         pass
 
     @abc.abstractmethod
     def operation(self,target_operation):
+        """
+        Must be implemented by the subclass.
+        It runs an operation on the object.
+        """
         pass
 
     @abc.abstractmethod
     def get_operation(self):
+        """
+        Must be implemented by the subclass.
+        It returns the operation that can be run on the object.
+        """
         pass
