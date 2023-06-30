@@ -70,9 +70,9 @@ Method NormalizeModel() As %Status
     set ret = $$$OK
     try {
         if ..Staging.Ingestion.ModelIsPython {
-            set ..NormModel = ##class(%SYS.Python).%New()
+            set ..NormModel = ..Model
             // normalize
-            set ..NormModel = ..Model.Normalize()
+            do ..NormModel.Normalize()
             // serialize normalized data
             set stream = ..NormModel.Serialize()
             // store into staging data
@@ -103,13 +103,19 @@ Method ValidateModel() As %Status
         set sc = $$$OK
         if ..Staging.Ingestion.ModelIsPython {
             try {
-                set errorList = ..NormModel.validate()
+                set pythonList = ..NormModel.Validation()
                 // Embedded python have a clunky way of handeling list
                 // I have tried build %ListOfDataTypes from python and it does not work
                 // So I have to build the list here
                 set list = ##class(%ListOfDataTypes).%New()
-                for i=1:1:errorList.Count() {
-                    do list.Insert(errorList.GetAt(i))
+                for i=1:1:pythonList.Count() {
+                    set err = pythonList.GetAt(i)
+                    if err.Code = "VALIDATION"
+                    {   
+                        set sc = $$$ERROR($$$GeneralError, err.Desc)
+                    } else {
+                        do list.Insert(err)
+                    }
                 }
                 set errorList = list
             } catch ex {
