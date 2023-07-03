@@ -90,6 +90,15 @@ Method NormalizeModel() As %Status
 
     } catch ex {
         set ret = ex.AsStatus()
+        // set the error list based on the exception
+        set errorList = ##class(%ListOfDataTypes).%New()
+        set err = ##class(DataPipe.Data.ErrorInfo).%New()
+        set err.Code = "NORMALIZE-ERROR"
+        set err.Desc = $system.Status.GetOneStatusText(ret)
+        do errorList.Insert(err)
+        // serialize validation errors
+        set ..Staging.ValidationErrors = errorList
+        $$$ThrowOnError(..Staging.SerializeValidationErrors())
     }
     quit ret
 }

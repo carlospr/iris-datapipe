@@ -26,6 +26,8 @@ Method OperationHandler(
             do ##class(DataPipe.Helper).SetPythonPath(pRequest.data.Ingestion.ModelClassPath)
             set modelObj = ##class(DataPipe.Helper).GetPythonInstance(pRequest.data.Ingestion.ModelModule, pRequest.data.Ingestion.ModelName)
             do modelObj.Deserialize(pRequest.data.ModelNormData)
+			set errorList = ""
+			set operLog = ""
 
         } else {
 			set modelData = pRequest.data.ModelNormData
@@ -44,7 +46,31 @@ Method OperationHandler(
 		
 		// not ignored - perfom operation	
 		} else {
-			set operationSC = modelObj.RunOperation(.errorList, .operLog, ##this)
+			if pRequest.data.Ingestion.ModelIsPython {
+				// Python doesn't support byref parameters, so we return error list and oper log as strings
+				try {
+					set operationSC = $$$OK
+					set pythonList = modelObj.RunOperation(##this)
+					set list = ##class(%ListOfDataTypes).%New()
+					set operLog = ##class(%Stream.GlobalCharacter).%New()
+                	for i=1:1:pythonList.Count() {
+						set err = pythonList.GetAt(i)
+						if err.Code = "OPERATION"
+						{   
+							set operationSC = $$$ERROR($$$GeneralError, err.Desc)
+						} if err.Code = "OPERLOG" {
+							do operLog.WriteLine(err.Desc)
+						} else {
+							do list.Insert(err)
+						}
+                	}
+				} catch ex {
+					set operationSC = ex.AsStatus()
+				}
+
+			} else {
+				set operationSC = modelObj.RunOperation(.errorList, .operLog, ##this)
+			}
 			set operObj.Retries = operObj.Retries + 1
 			if $$$ISOK(operationSC) {
 				set operObj.Status = "PROCESSED"
@@ -52,7 +78,6 @@ Method OperationHandler(
 			} else {
 				set operObj.Status = "ERROR"
 				set inboxObj.Status = "ERROR-OPERATING"
-
 				// serialize errors
 				set operObj.OperErrors = errorList
 				$$$ThrowOnError(operObj.SerializeOperErrors())

@@ -48,16 +48,19 @@ class _Model(metaclass=abc.ABCMeta):
             self.add_error("VALIDATION",str(e))
         return self.error_list
     
-    def RunOperation(self,error,log,operation_instance):
+    def RunOperation(self,operation_instance):
+        log = []
         try:
             self.operation(operation_instance)
-            if self.error_list:
-                error = self.error_list
             if self.log_list:
-                log = self.log_list
+                for line in self.log_list:
+                    self.add_error("OPERLOG",line)
+            if self.error_list:
+                for line in self.error_list:
+                    log.append(line)
         except Exception as e:
-            raise e
-        return 1
+            self.add_error("OPERATION",str(e))
+        return log
     
     def GetOperation(self):
         return self.get_operation()

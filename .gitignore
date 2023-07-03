@@ -1,5 +1,6 @@
 *.log
 data/input/*.hl7
+data/output/
 # Python stuff:
 *.pyc
 *.pyo

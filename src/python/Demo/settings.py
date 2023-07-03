@@ -43,7 +43,7 @@ PRODUCTIONS = [
                     {
                         "@Target": "Adapter",
                         "@Name": "FilePath",
-                        "#text": "/Users/grongier/git/datapipe/iris-datapipe/data/input"
+                        "#text": "/opt/irisapp/data/input"
                     },
                     {
                         "@Target": "Adapter",

@@ -2,6 +2,7 @@ from DataPipe import Model
 from dataclasses import dataclass
 import json
 import iris
+import random
 
 @dataclass
 class A08(Model):
@@ -20,7 +21,7 @@ class A08(Model):
         # export all attributes except error_list and log_list
         export = {key: value for key, value in self.__dict__.items() if key not in ["error_list","log_list"]}
         return json.dumps(export, indent=4)
-    
+
     def deserialize(self, json_str):
         # populate each attr of this object from a json string
         json_dict = json.loads(json_str)
@@ -37,7 +38,7 @@ class A08(Model):
         # for demo purposes raise an exception if name is Alfred or James or Kevin
         if self.name.upper() in ["ALFRED","JAMES","KEVIN"]:
             raise Exception("Name is not valid")
-        
+
     def validate(self):
         # create an iris.DataPipe.Data.ErrorInfo for each failed validation
         if self.administrative_sex is None or self.administrative_sex == "":
@@ -56,19 +57,23 @@ class A08(Model):
             if "V" in error.Code[0]:
                 raise Exception("Model is invalid")
         return self.error_list
-    
+
     def operation(self, operation_instance):
         """
         Perform operation
         """
+        self.add_log("Performing operation")
+        # once on 10 times raise an exception
+        if random.randint(1,10) == 10:
+            self.add_error("OPERATION","Random exception")
+            raise Exception("Random exception")
         if isinstance(operation_instance, object):
+            self.add_log("Operation instance is an object")
             msg = iris.cls('Ens.StringContainer')._New()
             msg.StringValue = "Call production component during RunOperation() "
             operation_instance.SendRequestAsync("Dummy",msg)
-        
-    
+
     def get_operation(self):
         if 'FIFO' in self.msg_id:
             return "FIFO A08 Operation"
         return "A08 Operation"
-

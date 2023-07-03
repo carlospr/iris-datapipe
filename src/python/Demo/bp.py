@@ -30,12 +30,3 @@ class HL7Ingestion(IngestionProcess):
         # send to staging
         self.send_request_async("HL7 Staging", self.staging_req)
 
-# for testing
-# if __name__ == '__main__':
-#     bp = HL7Ingestion()
-#     import iris
-#     msg = iris.cls('EnsLib.HL7.Message').ImportFromFile('/Users/grongier/git/datapipe/iris-datapipe/data/file6665459469713881531.hl7')
-#     bp.on_message(msg)
-#     bp.model.Normalize()
-#     erro = bp.model.Validate()
-#     print(erro)
