@@ -50,6 +50,8 @@ class _Model(metaclass=abc.ABCMeta):
     
     def RunOperation(self,operation_instance):
         log = []
+        self.error_list = []
+        self.log_list = []
         try:
             self.operation(operation_instance)
             if self.log_list:
