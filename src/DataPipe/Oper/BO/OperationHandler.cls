@@ -51,7 +51,7 @@ Method OperationHandler(
 				try {
 					set operationSC = $$$OK
 					set pythonList = modelObj.RunOperation(##this)
-					set list = ##class(%ListOfDataTypes).%New()
+					set errorList = ##class(%ListOfDataTypes).%New()
 					set operLog = ##class(%Stream.GlobalCharacter).%New()
                 	for i=1:1:pythonList.Count() {
 						set err = pythonList.GetAt(i)
@@ -61,13 +61,12 @@ Method OperationHandler(
 						} if err.Code = "OPERLOG" {
 							do operLog.WriteLine(err.Desc)
 						} else {
-							do list.Insert(err)
+							do errorList.Insert(err)
 						}
                 	}
 				} catch ex {
 					set operationSC = ex.AsStatus()
 				}
-
 			} else {
 				set operationSC = modelObj.RunOperation(.errorList, .operLog, ##this)
 			}

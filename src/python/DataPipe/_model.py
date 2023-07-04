@@ -54,14 +54,14 @@ class _Model(metaclass=abc.ABCMeta):
         self.log_list = []
         try:
             self.operation(operation_instance)
-            if self.log_list:
-                for line in self.log_list:
-                    self.add_error("OPERLOG",line)
-            if self.error_list:
-                for line in self.error_list:
-                    log.append(line)
         except Exception as e:
             self.add_error("OPERATION",str(e))
+        if self.log_list:
+            for line in self.log_list:
+                self.add_error("OPERLOG",line)
+        if self.error_list:
+            for line in self.error_list:
+                log.append(line)
         return log
     
     def GetOperation(self):

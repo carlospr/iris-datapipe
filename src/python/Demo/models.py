@@ -65,8 +65,8 @@ class A08(Model):
         self.add_log("Performing operation")
         # once on 10 times raise an exception
         if random.randint(1,10) == 10:
-            self.add_error("OPERATION","Random exception")
             raise Exception("Random exception")
+
         if isinstance(operation_instance, object):
             self.add_log("Operation instance is an object")
             msg = iris.cls('Ens.StringContainer')._New()
