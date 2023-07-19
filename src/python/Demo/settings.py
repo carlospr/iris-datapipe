@@ -43,7 +43,7 @@ PRODUCTIONS = [
                     {
                         "@Target": "Adapter",
                         "@Name": "FilePath",
-                        "#text": "/opt/irisapp/data/input"
+                        "#text": "/app/data/input"
                     },
                     {
                         "@Target": "Adapter",
