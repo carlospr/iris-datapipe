@@ -11,6 +11,10 @@ docker compose up -d
 
 * Log-in to the system using `superuser` / `SYS`.
 
+* Start an inteoperability production in *Interoperability > List > Productions*:
+  * `DataPipe.Test.Production` - regular objectscript DataPipe demo production
+  * `DataPipe.Python.Production` - Python implemented DataPiepe demo production
+
 * Generate sample data using [WebTerminal](http://localhost:52773/terminal/)
 ```objectscript
 do ##class(DataPipe.Test.HL7.Helper).GenerateFilesHL7ADT(100)
