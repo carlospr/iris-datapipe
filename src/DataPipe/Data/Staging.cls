@@ -57,8 +57,9 @@ Method SerializeValidationErrors() As %Status
 	try {
     set count = ..ValidationErrors.Count()
 	for i=1:1:count {
-      set code = ..ValidationErrors.GetAt(i).Code
-      set desc = ..ValidationErrors.GetAt(i).Desc
+	  set err = ..ValidationErrors.GetAt(i)
+      set code = err.Code
+      set desc = err.Desc
       set jsonError = code_": "_desc
       do jsonArr.%Push(jsonError)
 	}

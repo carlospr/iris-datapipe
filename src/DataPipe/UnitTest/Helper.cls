@@ -1,7 +1,9 @@
 Class DataPipe.UnitTest.Helper Extends %RegisteredObject
 {
 
-ClassMethod FindInboxByMsgId(msgId As %String, Output inbox) As %Status
+ClassMethod FindInboxByMsgId(
+	msgId As %String,
+	Output inbox) As %Status
 {
     set ret = $$$OK
 	try {

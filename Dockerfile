@@ -1,4 +1,4 @@
-ARG IMAGE=intersystemsdc/irishealth-community:2022.2.0.368.0-zpm
+ARG IMAGE=intersystemsdc/irishealth-community:latest
 FROM $IMAGE
 
 USER root
@@ -24,7 +24,17 @@ COPY --chown=irisowner:irisowner src src
 COPY --chown=irisowner:irisowner module.xml module.xml
 COPY --chown=irisowner:irisowner Installer.cls Installer.cls
 
+ENV PATH "/home/irisowner/.local/bin:/usr/irissys/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/irisowner/bin"
+
+RUN pip install iris-pex-embedded-python
+
+## Python stuff
+ENV IRISUSERNAME "SuperUser"
+ENV IRISPASSWORD "SYS"
+ENV IRISNAMESPACE "DPIPE"
+
 # run iris.script
 RUN iris start IRIS \
     && iris session IRIS < /opt/irisapp/iris.script \
+    && iop -m /opt/irisapp/src/python/Demo/settings.py \
     && iris stop IRIS quietly

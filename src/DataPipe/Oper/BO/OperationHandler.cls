@@ -5,7 +5,9 @@ Parameter ADAPTER;
 
 Parameter INVOCATION = "Queue";
 
-Method OperationHandler(pRequest As DataPipe.Msg.OperReq, Output pResponse As Ens.Response) As %Status
+Method OperationHandler(
+	pRequest As DataPipe.Msg.OperReq,
+	Output pResponse As Ens.Response) As %Status
 {
 	set ret = $$$OK
 	try {
@@ -19,10 +21,20 @@ Method OperationHandler(pRequest As DataPipe.Msg.OperReq, Output pResponse As En
 		$$$ThrowOnError(operObj.%Save())
 
 		// deserialize model
-		set modelData = pRequest.data.ModelNormData
-        set modelName = pRequest.data.Ingestion.ModelName
-        set sc = $classmethod(modelName, "Deserialize", modelData, .modelObj)
-        $$$ThrowOnError(sc)
+        if pRequest.data.Ingestion.ModelIsPython {
+            // Set python path
+            do ##class(DataPipe.Helper).SetPythonPath(pRequest.data.Ingestion.ModelClassPath)
+            set modelObj = ##class(DataPipe.Helper).GetPythonInstance(pRequest.data.Ingestion.ModelModule, pRequest.data.Ingestion.ModelName)
+            do modelObj.Deserialize(pRequest.data.ModelNormData)
+			set errorList = ""
+			set operLog = ""
+
+        } else {
+			set modelData = pRequest.data.ModelNormData
+			set modelName = pRequest.data.Ingestion.ModelName
+			set sc = $classmethod(modelName, "Deserialize", modelData, .modelObj)
+			$$$ThrowOnError(sc)
+		}
 
 		set operLog = ""
 		set operationSC = $$$OK
@@ -34,7 +46,30 @@ Method OperationHandler(pRequest As DataPipe.Msg.OperReq, Output pResponse As En
 		
 		// not ignored - perfom operation	
 		} else {
-			set operationSC = modelObj.RunOperation(.errorList, .operLog, ##this)
+			if pRequest.data.Ingestion.ModelIsPython {
+				// Python doesn't support byref parameters, so we return error list and oper log as strings
+				try {
+					set operationSC = $$$OK
+					set pythonList = modelObj.RunOperation(##this)
+					set errorList = ##class(%ListOfDataTypes).%New()
+					set operLog = ##class(%Stream.GlobalCharacter).%New()
+                	for i=1:1:pythonList.Count() {
+						set err = pythonList.GetAt(i)
+						if err.Code = "OPERATION"
+						{   
+							set operationSC = $$$ERROR($$$GeneralError, err.Desc)
+						} if err.Code = "OPERLOG" {
+							do operLog.WriteLine(err.Desc)
+						} else {
+							do errorList.Insert(err)
+						}
+                	}
+				} catch ex {
+					set operationSC = ex.AsStatus()
+				}
+			} else {
+				set operationSC = modelObj.RunOperation(.errorList, .operLog, ##this)
+			}
 			set operObj.Retries = operObj.Retries + 1
 			if $$$ISOK(operationSC) {
 				set operObj.Status = "PROCESSED"
@@ -42,7 +77,6 @@ Method OperationHandler(pRequest As DataPipe.Msg.OperReq, Output pResponse As En
 			} else {
 				set operObj.Status = "ERROR"
 				set inboxObj.Status = "ERROR-OPERATING"
-
 				// serialize errors
 				set operObj.OperErrors = errorList
 				$$$ThrowOnError(operObj.SerializeOperErrors())

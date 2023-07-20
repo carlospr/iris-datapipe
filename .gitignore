@@ -1,2 +1,15 @@
 *.log
 data/input/*.hl7
+data/output/
+# Python stuff:
+*.pyc
+*.pyo
+# virtualenv
+.venv
+# dist
+dist
+# build
+build
+# eggs
+*.egg
+*.egg-info

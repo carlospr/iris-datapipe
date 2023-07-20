@@ -88,7 +88,9 @@ ClassMethod queryFIND() As %String
 
 /// Get an Inbox record, querying by key attributes
 /// This method is used to determine if an Inbox record can be re-used
-ClassMethod GetByKeyAttributes(att As InboxAttributes, Output obj As Inbox) As %Status
+ClassMethod GetByKeyAttributes(
+	att As InboxAttributes,
+	Output obj As Inbox) As %Status
 {
 	set ret = $$$OK
 	try {
@@ -115,7 +117,10 @@ ClassMethod GetByKeyAttributes(att As InboxAttributes, Output obj As Inbox) As %
 
 /// Calculate a SQL field given an Inbox ID
 /// This method is used by calculated SQL fields
-ClassMethod CalcSqlFieldById(field As %String, default As %String, id As %String) As %String
+ClassMethod CalcSqlFieldById(
+	field As %String,
+	default As %String,
+	id As %String) As %String
 {
 	set ret = default
 	try {

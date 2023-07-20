@@ -36,7 +36,9 @@ Method Serialize(Output stream) As %Status
 }
 
 /// Deserialize from json
-ClassMethod Deserialize(stream As %Stream.Object, Output obj) As %Status
+ClassMethod Deserialize(
+	stream As %Stream.Object,
+	Output obj) As %Status
 {
     set ret = $$$OK
     try {
@@ -119,7 +121,10 @@ Method GetOperation() As %Status
 
 /// Run final operation with the model
 /// This method can be used to persit data from the model to an operational data store
-Method RunOperation(Output errorList As %List, Output log As %Stream.Object, bOperation As Ens.BusinessOperation = "") As %Status
+Method RunOperation(
+	Output errorList As %List,
+	Output log As %Stream.Object,
+	bOperation As Ens.BusinessOperation = "") As %Status
 {
     #define AddError(%list, %code, %desc) set error = ##class(DataPipe.Data.ErrorInfo).%New() set error.Code=%code set error.Desc=%desc do %list.Insert(error)
     #define AddLog(%log, %msg) do %log.WriteLine("["_$zdt($h,3)_"] "_%msg)

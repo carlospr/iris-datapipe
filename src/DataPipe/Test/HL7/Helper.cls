@@ -3,7 +3,12 @@ Class DataPipe.Test.HL7.Helper Extends %RegisteredObject
 
 /// Generate multiple test ADT HL7 Files
 /// do ##class(DataPipe.Test.HL7.Helper).GenerateFilesHL7ADT(100)
-ClassMethod GenerateFilesHL7ADT(nfiles As %Integer = 100, fifoEnabled As %Boolean = 0, outputDir As %String = "/app/data/input/", template As %String = "/app/data/ADTA08.hl7", docType As %String = "2.5:ADT_A01") As %Status
+ClassMethod GenerateFilesHL7ADT(
+	nfiles As %Integer = 100,
+	fifoEnabled As %Boolean = 0,
+	outputDir As %String = "/app/data/input/",
+	template As %String = "/app/data/ADTA08.hl7",
+	docType As %String = "2.5:ADT_A01") As %Status
 {
     set ret = $$$OK
 
@@ -26,7 +31,12 @@ ClassMethod GenerateFilesHL7ADT(nfiles As %Integer = 100, fifoEnabled As %Boolea
 /// - fifoEnabled: randomly generate msgid containing "FIFO" (will be treated as FIFO on test production)
 /// - template: template message
 /// - doctype: document type to use 
-ClassMethod GenerateHL7(input As %DynamicObject = {{}}, fifoEnabled As %Boolean = 0, template As %String, docType As %String, Output hl7) As %Status
+ClassMethod GenerateHL7(
+	input As %DynamicObject = {{}},
+	fifoEnabled As %Boolean = 0,
+	template As %String,
+	docType As %String,
+	Output hl7) As %Status
 {
     set ret = $$$OK
     try {
