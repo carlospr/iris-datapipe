@@ -3,7 +3,7 @@
     set $namespace = "%SYS"
     do ##class(Security.Users).UnExpireUserPasswords("*")
 
-    //Service for embedded python
+    // service for embedded python
     do ##class(Security.Services).Get("%Service_CallIn",.prop)
     set prop("Enabled")=1
     set prop("AutheEnabled")=48
@@ -16,6 +16,11 @@
     set vars("DataDBPath")="/opt/dpipe/db/DATA" 
     set vars("CodeDBPath")="/opt/dpipe/db/CODE"
     do ##class(App.Installer).CreateNamespace(.vars)
+
+    // import sample users, roles, resources
+    write ##class(Security.Resources).Import("/opt/irisapp/install/resources.xml")
+    write ##class(Security.Roles).Import("/opt/irisapp/install/roles.xml")
+    write ##class(Security.Users).Import("/opt/irisapp/install/users.xml")
 
     // install DataPipe (zpm)
     set $namespace = "DPIPE"

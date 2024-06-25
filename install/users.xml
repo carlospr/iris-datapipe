@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<UsersExport>
+  <Users>
+    <AccountNeverExpires>true</AccountNeverExpires>
+    <AutheEnabled>0</AutheEnabled>
+    <ChangePassword>false</ChangePassword>
+    <CreateDateTime>67015,54952.66250835</CreateDateTime>
+    <CreateUsername>SuperUser</CreateUsername>
+    <Enabled>true</Enabled>
+    <ExpirationDate>1840-12-31</ExpirationDate>
+    <Flags>1</Flags>
+    <HOTPKey>fYqaajB6EjQUDAn9NaSUynpdfxs=</HOTPKey>
+    <HOTPKeyGenerate>false</HOTPKeyGenerate>
+    <HOTPKeyDisplay>false</HOTPKeyDisplay>
+    <LastModifiedDateTime>67015,54964.995354514</LastModifiedDateTime>
+    <LastModifiedInfo>
+Roles modified:
+  New value: DataPipe_Admin
+  Old value: 
+</LastModifiedInfo>
+    <LastModifiedUsername>SuperUser</LastModifiedUsername>
+    <Name>dpadmin</Name>
+    <Password>XUe58t+OR1J3unByu7XI/K0s2WfwDR4aLqkq0PHRQxJH918cCCj71doQFgZ1a+NJil5EP+ToNkgb0JAxpSSxjQ==</Password>
+    <PasswordNeverExpires>false</PasswordNeverExpires>
+    <PasswordChangedDateTime>67015,54952.662522735</PasswordChangedDateTime>
+    <PasswordReset>false</PasswordReset>
+    <Roles>
+      <RolesItem>DataPipe_Admin</RolesItem>
+    </Roles>
+    <RolesAreAdmin>false</RolesAreAdmin>
+    <Salt>WQPhiCj/WfEj0yMR5yYYBzjJNMdM7OdEwpooW6CJT6O0epjxTVMzGtW97HlHlYhp5JO2kVlkZatbO7o70zkGPg==</Salt>
+    <PasswordHashAlgorithm>SHA512</PasswordHashAlgorithm>
+    <PasswordHashWorkFactor>10000</PasswordHashWorkFactor>
+    <Version>1</Version>
+  </Users>
+  <SQLRoleGrantOption>
+    <UserOrRole>dpadmin</UserOrRole>
+    <RoleGranted>DataPipe_Admin</RoleGranted>
+    <Grantable>0</Grantable>
+  </SQLRoleGrantOption>
+</UsersExport>

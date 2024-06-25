@@ -21,6 +21,7 @@ USER irisowner
 WORKDIR /opt/irisapp
 COPY --chown=irisowner:irisowner iris.script iris.script
 COPY --chown=irisowner:irisowner src src
+COPY --chown=irisowner:irisowner install install
 COPY --chown=irisowner:irisowner module.xml module.xml
 COPY --chown=irisowner:irisowner Installer.cls Installer.cls
 
