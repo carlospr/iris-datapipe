@@ -4,9 +4,13 @@ Class DataPipe.REST.Main Extends Form.REST.Abstract
 XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 {
 <Routes>
+<!-- restforms2 -->
+<Map Prefix="/rf2" Forward="Form.REST.Main"/>
+<!-- datapipe -->
+<Route Url="/login" Method="POST" Call="doLogin"/>
+<Route Url="/getUserInfo" Method="GET" Call="getUserInfo"/>
 <Route Url="/resendMessage/:headerId" Method="POST" Call="resendMessage"/>
 <Route Url="/ignore/:id" Method="PUT" Call="ignore"/>
-<Route Url="/getUserInfo" Method="GET" Call="getUserInfo"/>
 </Routes>
 }
 
@@ -54,6 +58,13 @@ ClassMethod ignore(id As %String) As %Status
 	quit ret
 }
 
+/// DataPipe login
+/// Authentication is already done at this point (e.g. Basic)
+ClassMethod doLogin() As %Status
+{
+	return $$$OK
+}
+
 /// Retrive user info (e.g. specific DataPipe auth attribs.)
 ClassMethod getUserInfo() As %Status
 {
@@ -61,7 +72,8 @@ ClassMethod getUserInfo() As %Status
 	try {
 		set jsonObj={}
 		set jsonObj.username = $username
-		do jsonObj.%Set("isAdminUser", ##class(DataPipe.Auth).IsAdminUser(), "boolean")
+		do jsonObj.%Set("fullName", ##class(DataPipe.Auth).GetFullName())
+		do jsonObj.%Set("permissions", ##class(DataPipe.Auth).GetPermissions())
 
 		write jsonObj.%ToJSON()	
 		
