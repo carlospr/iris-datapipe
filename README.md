@@ -4,26 +4,52 @@ DataPipe an interoperability framework to ingest data in InterSystems IRIS in a 
 
 # QuickStart
 
-* Run development container
+## Run container
 ```
 docker compose up -d
 ```
 
-* Log-in to the system using `superuser` / `SYS`.
+## Create Data Pipes
+Your data will be processed using "Data Pipes". Each data pipe has its own Code, Description and optionally a Security Resource that will be required to query the pipe.
 
-* Start an inteoperability production in *Interoperability > List > Productions*:
-  * `DataPipe.Test.Production` - regular objectscript DataPipe demo production
-  * `DataPipe.Python.Production` - Python implemented DataPiepe demo production
+Create some sample data pipes using SQL:
 
-* Generate sample data using [WebTerminal](http://localhost:52773/terminal/)
+* Log-in to the [Management Portal](http://localhost:52773/csp/sys/UtilHome.csp) using `superuser` / `SYS`.
+* Go to [System Explorer > SQL](http://localhost:52773/csp/sys/exp/%25CSP.UI.Portal.SQL.Home.zen?$NAMESPACE=DPIPE) and run:
+
+```sql
+-- create a pipe for HL7 ADT messages. User need to have permissions on DP_PIPE_HL7ADT resource to query this pipe.
+INSERT INTO DataPipe_Data.Pipe (Code, Description, SecurityResource) values ('HL7-ADT', 'Sample HL7 Pipe', 'DP_PIPE_HL7ADT')
+```
+
+```sql
+-- create a pipe for a dummy REST API
+INSERT INTO DataPipe_Data.Pipe (Code, Description) values ('DUMMY-API', 'A REST API Pipe')
+```
+
+## Start an interoperability production
+Data Pipe uses interoperability framework, so you need to start an interoperability production.
+
+Open [DataPipe.Test.Production](http://localhost:52773/csp/dpipe/EnsPortal.ProductionConfig.zen?PRODUCTION=DataPipe.Test.Production) and click `Start`.
+
+
+## Generate some sample data
+Now you can generate some sample data that will be processed in your pipes.
+
+* Open an interactive [WebTerminal](http://localhost:52773/terminal/) session.
+* Generate sample `HL7-ADT` messages
+
 ```objectscript
 do ##class(DataPipe.Test.HL7.Helper).GenerateFilesHL7ADT(100)
 ```
 
-* Checkout interoperability production [DataPipe.Test.Production](http://localhost:52773/csp/dpipe/EnsPortal.ProductionConfig.zen?PRODUCTION=DataPipe.Test.Production).
+You can have a look at the [DataPipe.Test.Production](http://localhost:52773/csp/dpipe/EnsPortal.ProductionConfig.zen?PRODUCTION=DataPipe.Test.Production) and see how messages has been processed.
+
 
 ## DataPipeUI
-You can use [datapipeUI](https://github.com/intersystems-ib/iris-datapipeUI) as a user interface:
+DataPipe also includes an UI which will give use a clear vision of the data you have just processed.
+
+Follow these steps to run [datapipeUI](https://github.com/intersystems-ib/iris-datapipeUI).
 
 1. In other directory, clone [datapipeUI](https://github.com/intersystems-ib/iris-datapipeUI) repository
 
@@ -38,7 +64,7 @@ cd iris-datapipeUI
 docker compose up -d
 ```
 
-3. Check the generated sample data using the UI at http://localhost:8080
+3. Log-in the UI at http://localhost:8080 using `dpadmin` / `demo`
 
 <img src="img/iris-datapipeUI.gif" />
 

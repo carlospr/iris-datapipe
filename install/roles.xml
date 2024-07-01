@@ -55,6 +55,10 @@
         <Name>DP_MENU_SEARCH</Name>
         <Permission>7</Permission>
       </Resource>
+      <Resource>
+        <Name>DP_PIPE_HL7ADT</Name>
+        <Permission>7</Permission>
+      </Resource>
     </Resources>
     <Version>2</Version>
   </Roles>
@@ -149,6 +153,30 @@
   <SQLPrivileges>
     <Namespace>DPIPE</Namespace>
     <SQLObject>1,DataPipe_Data.Staging</SQLObject>
+    <Privilege>u</Privilege>
+    <Grantee>DataPipe_Admin</Grantee>
+    <Grantor>SuperUser</Grantor>
+    <Grantable>0</Grantable>
+  </SQLPrivileges>
+  <SQLPrivileges>
+    <Namespace>DPIPE</Namespace>
+    <SQLObject>1,DataPipe_Data.Pipe</SQLObject>
+    <Privilege>i</Privilege>
+    <Grantee>DataPipe_Admin</Grantee>
+    <Grantor>SuperUser</Grantor>
+    <Grantable>0</Grantable>
+  </SQLPrivileges>
+  <SQLPrivileges>
+    <Namespace>DPIPE</Namespace>
+    <SQLObject>1,DataPipe_Data.Pipe</SQLObject>
+    <Privilege>s</Privilege>
+    <Grantee>DataPipe_Admin</Grantee>
+    <Grantor>SuperUser</Grantor>
+    <Grantable>0</Grantable>
+  </SQLPrivileges>
+  <SQLPrivileges>
+    <Namespace>DPIPE</Namespace>
+    <SQLObject>1,DataPipe_Data.Pipe</SQLObject>
     <Privilege>u</Privilege>
     <Grantee>DataPipe_Admin</Grantee>
     <Grantor>SuperUser</Grantor>

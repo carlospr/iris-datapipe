@@ -28,7 +28,6 @@ ClassMethod GetFullName() As %String
 /// DP_MENU_AUDIT:R
 /// DP_MENU_ABOUT:R
 /// DP_PIPE_VACCINES:RWU
-/// DP_PIPE_AFLOW:R
 /// DP_PIPE_DEMO:RW
 ClassMethod GetPermissions() As %DynamicObject
 {

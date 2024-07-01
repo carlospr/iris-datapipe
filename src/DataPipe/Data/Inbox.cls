@@ -3,7 +3,7 @@ Class DataPipe.Data.Inbox Extends (%Persistent, InboxAttributes, %XML.Adaptor, F
 
 Parameter FORMNAME = "Inbox";
 
-Parameter OBJPERMISSIONS As %String = "CRUD";
+Parameter OBJPERMISSIONS As %String = "R";
 
 Parameter DISPLAYPROPERTY As %String = "Id";
 
@@ -58,7 +58,7 @@ Property OperRetries As %String(MAXLEN = "") [ SqlComputeCode = { set {OperRetri
 /// Related Ingestions
 Relationship Ingestions As Ingestion(%JSONREFERENCE = "ID") [ Cardinality = many, Inverse = Inbox ];
 
-Index PkIdx On (Source, Flow, MsgId) [ Unique ];
+Index PkIdx On (Source, Pipe, MsgId) [ Unique ];
 
 Index StatusIdx On Status [ Type = bitmap ];
 
@@ -72,7 +72,7 @@ Index OperStatusIdx On OperStatus [ Type = bitmap ];
 
 Index SourceIdx On Source [ Type = bitmap ];
 
-Index FlowIdx On Flow [ Type = bitmap ];
+Index PipeIdx On Pipe [ Type = bitmap ];
 
 Index MsgIdIdx On MsgId;
 
@@ -80,17 +80,49 @@ Index ElementIdx On Element;
 
 Index SubjectIdx On Subject;
 
-/// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Inbox/find
-ClassMethod queryFIND() As %String
+/// Read object and export to JSON
+ClassMethod toJSON(id As %Integer = "") As %Status
 {
-  quit "UpdatedTS, Id, Source, Flow, MsgId, Element, Subject, Ignored, Status, StagingStatus, OperStatus, ValidationErrors JSON@ValidationErrors, OperErrors JSON@OperErrors, OperRetries "
+	set ret = $$$OK
+	try {
+		// check that user can access this pipe
+		$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
+		set idObj=""
+		&sql(SELECT %id INTO :idObj FROM DataPipe_Data.Inbox WHERE id = :id and Pipe %inlist :permittedPipes)
+		if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
+
+		// return default restforms implementation
+		return ##super(id)
+		
+	} catch ex {
+		set ret = ex.AsStatus()
+	}
+	quit ret
+}
+
+/// RESTForms2 query /form/objects/DataPipe.Data.Inbox/custom/find
+ClassMethod customqueryFIND() As %String
+{
+	// get parameters
+	set filter = $get(%request.Data("filter",1))
+	set collation = $get(%request.Data("collation",1))
+	
+	// filter permitted pipes only
+	$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
+	if $listlength(permittedPipes) > 0 {
+		set filter = filter_" Pipe in "_$listtostring(permittedPipes, "~")
+	}
+
+	// where
+	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Inbox", .where))
+	
+	set sql = "SELECT UpdatedTS, Id, Source, Pipe, MsgId, Element, Subject, Ignored, Status, StagingStatus, OperStatus, ValidationErrors JSON@ValidationErrors, OperErrors JSON@OperErrors, OperRetries FROM DataPipe_Data.Inbox "_where
+	return sql
 }
 
 /// Get an Inbox record, querying by key attributes
 /// This method is used to determine if an Inbox record can be re-used
-ClassMethod GetByKeyAttributes(
-	att As InboxAttributes,
-	Output obj As Inbox) As %Status
+ClassMethod GetByKeyAttributes(att As InboxAttributes, Output obj As Inbox) As %Status
 {
 	set ret = $$$OK
 	try {
@@ -99,11 +131,11 @@ ClassMethod GetByKeyAttributes(
 
 		set obj="", inboxId=""
 
-		set sql = "select %id from DataPipe_Data.Inbox where Source=? and Flow=? and MsgId=?"
+		set sql = "select %id from DataPipe_Data.Inbox where Source=? and Pipe->Code=? and MsgId=?"
 		set statement = ##class(%SQL.Statement).%New()
 		$$$ThrowOnError(statement.%Prepare(sql))
 
-		set result = statement.%Execute(att.Source, att.Flow, att.MsgId)
+		set result = statement.%Execute(att.Source, att.Pipe.Code, att.MsgId)
 		if result.%Next() {
 			set inboxId = result.%GetData(1)
 			set obj = ..%OpenId(inboxId)
@@ -117,10 +149,7 @@ ClassMethod GetByKeyAttributes(
 
 /// Calculate a SQL field given an Inbox ID
 /// This method is used by calculated SQL fields
-ClassMethod CalcSqlFieldById(
-	field As %String,
-	default As %String,
-	id As %String) As %String
+ClassMethod CalcSqlFieldById(field As %String, default As %String, id As %String) As %String
 {
 	set ret = default
 	try {
@@ -164,7 +193,7 @@ Storage Default
 <Value>Source</Value>
 </Value>
 <Value name="3">
-<Value>Flow</Value>
+<Value>Pipe</Value>
 </Value>
 <Value name="4">
 <Value>MsgId</Value>

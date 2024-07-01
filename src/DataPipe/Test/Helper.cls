@@ -14,6 +14,7 @@ ClassMethod KillData() As %Status
         $$$ThrowOnError(##class(DataPipe.Data.Staging).%KillExtent())
         $$$ThrowOnError(##class(DataPipe.Data.Ingestion).%KillExtent())
         $$$ThrowOnError(##class(DataPipe.Data.Inbox).%KillExtent())
+        $$$ThrowOnError(##class(DataPipe.Data.Pipe).%KillExtent())
         
     } catch ex {
         set ret = ex.AsStatus()

@@ -35,7 +35,7 @@ Method IngestionManager() As %Status
             $$$ThrowOnError(..SaveData())
             $$$ThrowOnError(..BuildStagingReq())
         } else {
-           $$$LOGWARNING("Ignoring Inbox "_inbox.%Id()_" because has been set as ignored before") 
+           $$$LOGWARNING("Ignoring Inbox "_..Inbox.%Id()_" because has been set as ignored before") 
         }
         
     } catch ex {

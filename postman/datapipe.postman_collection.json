@@ -72,7 +72,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://{{host}}:{{port}}/{{endpoint}}/form/objects/DataPipe.Data.Inbox/find?filter=Flow+contains+ADT&page=1&size=10&collation=UPPER&orderby=1+desc",
+					"raw": "http://{{host}}:{{port}}/{{endpoint}}/form/objects/DataPipe.Data.Inbox/find?filter=Pipe+contains+ADT&page=1&size=10&collation=UPPER&orderby=1+desc",
 					"protocol": "http",
 					"host": [
 						"{{host}}"
@@ -88,7 +88,7 @@
 					"query": [
 						{
 							"key": "filter",
-							"value": "Flow+contains+ADT"
+							"value": "Pipe+contains+ADT"
 						},
 						{
 							"key": "page",

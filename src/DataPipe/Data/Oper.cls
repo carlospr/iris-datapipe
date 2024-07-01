@@ -3,7 +3,7 @@ Class DataPipe.Data.Oper Extends (%Persistent, %XML.Adaptor, Form.Adaptor)
 
 Parameter FORMNAME = "Oper";
 
-Parameter OBJPERMISSIONS As %String = "CRUD";
+Parameter OBJPERMISSIONS As %String = "R";
 
 Parameter DISPLAYPROPERTY As %String = "Id";
 
@@ -42,10 +42,44 @@ Relationship Staging As Staging(%JSONREFERENCE = "ID") [ Cardinality = one, Inve
 /// Index
 Index StagingIndex On Staging;
 
-/// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Oper/find
-ClassMethod queryFIND() As %String
+/// RESTForms2 query /form/objects/DataPipe.Data.Oper/custom/find
+ClassMethod customqueryFIND() As %String
 {
-  quit "Id, CreatedTS, HeaderId, Status, OperErrorsJson JSON@OperErrorsJson "
+	// get parameters
+	set filter = $get(%request.Data("filter",1))
+	set collation = $get(%request.Data("collation",1))
+	
+	// filter permitted pipes only
+	$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
+	if $listlength(permittedPipes) > 0 {
+		set filter = filter_" Staging->Ingestion->Inbox->Pipe in "_$listtostring(permittedPipes, "~")
+	}
+
+	// where
+	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Oper", .where))
+	
+	set sql = "SELECT Id, CreatedTS, HeaderId, Status, OperErrorsJson JSON@OperErrorsJson FROM DataPipe_Data.Oper "_where
+	return sql
+}
+
+/// Read object and export to JSON
+ClassMethod toJSON(id As %Integer = "") As %Status
+{
+	set ret = $$$OK
+	try {
+		// check that user can access this pipe
+		$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
+		set idObj=""
+		&sql(SELECT %id INTO :idObj FROM DataPipe_Data.Oper WHERE id = :id and Staging->Ingestion->Inbox->Pipe %inlist :permittedPipes)
+		if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
+
+		// return default restforms implementation
+		return ##super(id)
+		
+	} catch ex {
+		set ret = ex.AsStatus()
+	}
+	quit ret
 }
 
 /// Serialize oper errors. Serialized errors will be used in UI.

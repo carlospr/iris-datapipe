@@ -18,4 +18,10 @@
     <Type>2147483648</Type>
     <Version>1</Version>
   </Resources>
+  <Resources>
+    <Name>DP_PIPE_HL7ADT</Name>
+    <PublicPermission>0</PublicPermission>
+    <Type>2147483648</Type>
+    <Version>1</Version>
+  </Resources>
 </ResourcesExport>

@@ -12,7 +12,7 @@ import os
 class _Ingestion(BusinessProcess):
 
     # mapping from iris.DataPipe.Data.InboxAttributes to dict
-    _att = {"Flow":"flow","Source":"source","MsgId":"msg_id","Element":"element","Subject":"subject"}
+    _att = {"Pipe":"pipe","Source":"source","MsgId":"msg_id","Element":"element","Subject":"subject"}
 
     def ingest(self):
         try:

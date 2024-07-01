@@ -19,7 +19,7 @@ XData BPL [ XMLNamespace = "http://www.intersystems.com/bpl" ]
 <transform name='HL7 To InboxAttributes' class='DataPipe.Test.HL7.DT.A08ToInboxAttributes' source='request' target='context.InboxAttributes' xpos='200' ypos='350' />
 <code name='Set InboxAttributes' xpos='200' ypos='450' >
 <![CDATA[ set context.InboxAttributes.Source = "HCIS"
- set context.InboxAttributes.Flow = "HL7-ADT"
+ do context.InboxAttributes.PipeSetObjectId("HL7-ADT")
  ]]>
 </code>
 <transform name='HL7 to Model' class='DataPipe.Test.HL7.DT.A08ToModel' source='request' target='context.Model' xpos='200' ypos='550' />

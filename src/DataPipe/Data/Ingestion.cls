@@ -3,7 +3,7 @@ Class DataPipe.Data.Ingestion Extends (%Persistent, %XML.Adaptor, Form.Adaptor)
 
 Parameter FORMNAME = "Ingestion";
 
-Parameter OBJPERMISSIONS As %String = "CRUD";
+Parameter OBJPERMISSIONS As %String = "R";
 
 Parameter DISPLAYPROPERTY As %String = "Id";
 
@@ -45,10 +45,44 @@ Relationship Stagings As Staging(%JSONREFERENCE = "ID") [ Cardinality = many, In
 /// Index
 Index InboxIndex On Inbox;
 
-/// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Ingestion/find
-ClassMethod queryFIND() As %String
+/// RESTForms2 query /form/objects/DataPipe.Data.Ingestion/custom/find
+ClassMethod customqueryFIND() As %String
 {
-  quit "Id, CreatedTS, HeaderId "
+	// get parameters
+	set filter = $get(%request.Data("filter",1))
+	set collation = $get(%request.Data("collation",1))
+	
+	// filter permitted pipes only
+	$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
+	if $listlength(permittedPipes) > 0 {
+		set filter = filter_" Inbox->Pipe in "_$listtostring(permittedPipes, "~")
+	}
+
+	// where
+	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Ingestion", .where))
+	
+	set sql = "SELECT Id, CreatedTS, HeaderId FROM DataPipe_Data.Ingestion "_where
+	return sql
+}
+
+/// Read object and export to JSON
+ClassMethod toJSON(id As %Integer = "") As %Status
+{
+	set ret = $$$OK
+	try {
+		// check that user can access this pipe
+		$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
+		set idObj=""
+		&sql(SELECT %id INTO :idObj FROM DataPipe_Data.Ingestion WHERE id = :id and Inbox->Pipe %inlist :permittedPipes)
+		if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
+
+		// return default restforms implementation
+		return ##super(id)
+		
+	} catch ex {
+		set ret = ex.AsStatus()
+	}
+	quit ret
 }
 
 Storage Default

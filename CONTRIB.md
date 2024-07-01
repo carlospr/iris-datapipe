@@ -21,6 +21,18 @@ IRIS instance:
 * *Credentials*: `superuser` / `SYS`
 * *URL*: http://localhost:52773/csp/sys/UtilHome.csp
 
+See [README.md](./README.md), QuickStart section.
+
+# Utils
+Generate 100 sample hl7 files for processing in test production:
+```objectscript
+do ##class(DataPipe.Test.HL7.Helper).GenerateFilesHL7ADT(100)
+```
+
+Delete `DataPipe.Data.*` data:
+```objectscript
+do ##class(DataPipe.Test.Helper).KillData()
+```
 
 # Unit Tests
 Open an IRIS interactive session:
@@ -41,15 +53,4 @@ Run an specific test case:
 zn "dpipe"
 set ^UnitTestRoot = "/app/src/DataPipe/UnitTest"
 do ##class(%UnitTest.Manager).RunTest(":DataPipe.UnitTest.HL7", "/nodelete")
-```
-
-# Utils
-Generate 100 sample hl7 files for processing in test production:
-```objectscript
-do ##class(DataPipe.Test.HL7.Helper).GenerateFilesHL7ADT(100, 1)
-```
-
-Delete `DataPipe.Data.*` data:
-```objectscript
-do ##class(DataPipe.Test.Helper).KillData()
 ```

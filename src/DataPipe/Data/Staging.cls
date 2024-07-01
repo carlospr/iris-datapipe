@@ -3,7 +3,7 @@ Class DataPipe.Data.Staging Extends (%Persistent, %XML.Adaptor, Form.Adaptor)
 
 Parameter FORMNAME = "Staging";
 
-Parameter OBJPERMISSIONS As %String = "CRUD";
+Parameter OBJPERMISSIONS As %String = "R";
 
 Parameter DISPLAYPROPERTY As %String = "Id";
 
@@ -42,10 +42,44 @@ Relationship Opers As Oper(%JSONREFERENCE = "ID") [ Cardinality = many, Inverse 
 /// Index
 Index IngestionIndex On Ingestion;
 
-/// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Staging/find
-ClassMethod queryFIND() As %String
+/// RESTForms2 query /form/objects/DataPipe.Data.Staging/custom/find
+ClassMethod customqueryFIND() As %String
 {
-  quit "Id, CreatedTS, HeaderId, Status, ValidationErrorsJson JSON@ValidationErrorsJson"
+	// get parameters
+	set filter = $get(%request.Data("filter",1))
+	set collation = $get(%request.Data("collation",1))
+	
+	// filter permitted pipes only
+	$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
+	if $listlength(permittedPipes) > 0 {
+		set filter = filter_" Ingestion->Inbox->Pipe in "_$listtostring(permittedPipes, "~")
+	}
+
+	// where
+	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Staging", .where))
+	
+	set sql = "SELECT Id, CreatedTS, HeaderId, Status, ValidationErrorsJson JSON@ValidationErrorsJson FROM DataPipe_Data.Staging "_where
+	return sql
+}
+
+/// Read object and export to JSON
+ClassMethod toJSON(id As %Integer = "") As %Status
+{
+	set ret = $$$OK
+	try {
+		// check that user can access this pipe
+		$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
+		set idObj=""
+		&sql(SELECT %id INTO :idObj FROM DataPipe_Data.Staging WHERE id = :id and Ingestion->Inbox->Pipe %inlist :permittedPipes)
+		if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
+
+		// return default restforms implementation
+		return ##super(id)
+		
+	} catch ex {
+		set ret = ex.AsStatus()
+	}
+	quit ret
 }
 
 /// Serialize validation errors. Serialized errors will be used in UI.
