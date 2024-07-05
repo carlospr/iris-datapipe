@@ -20,21 +20,17 @@ ClassMethod getInboxActivitySummary() As %Status
 {
 	set ret = $$$OK
 	try {
-		// TODO: handle parameters
-		//
 		// get parameters
-		//set filter = $get(%request.Data("filter",1))
-		//set collation = $get(%request.Data("collation",1))
-		// where
-		//$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Inbox", .where))
+		set updatedTSFrom = $tr($get(%request.Data("UpdatedTSFrom",1)),"TZ"," ")
+		set updatedTSTo = $tr($get(%request.Data("UpdatedTSTo",1)), "TZ", " ")
 
 		// ok, errors query
-		set sqlStatus = "select count(*) from DataPipe_Data.VInbox where Status %INLIST ? and Pipe = ? and Ignored = ?"
+		set sqlStatus = "select count(*) from DataPipe_Data.VInbox where Status %INLIST ? and Pipe = ? and Ignored = ? and UpdatedTS between ? and ?"
 		set stmStatus = ##class(%SQL.Statement).%New()
 		$$$ThrowOnError(stmStatus.%Prepare(sqlStatus))
 
 		// warning query
-		set sqlWarning = "select count(*) from DataPipe_Data.VInbox where StagingStatus = ? and Pipe = ? and Ignored = ?"
+		set sqlWarning = "select count(*) from DataPipe_Data.VInbox where StagingStatus = ? and Pipe = ? and Ignored = ? and UpdatedTS between ? and ?"
 		set stmWarning = ##class(%SQL.Statement).%New()
 		$$$ThrowOnError(stmWarning.%Prepare(sqlWarning))
 		
@@ -47,17 +43,17 @@ ClassMethod getInboxActivitySummary() As %Status
 			set jsonPipe = { "errors": 0, "ok": 0, "warnings": 0 }
 			
 			// errors
-			set result = stmStatus.%Execute($lb("ERROR-OPERATING","ERROR-STAGING","ERROR-INGESTING","ERROR-GENERAL"), pipe, 0)
+			set result = stmStatus.%Execute($lb("ERROR-OPERATING","ERROR-STAGING","ERROR-INGESTING","ERROR-GENERAL"), pipe, 0, updatedTSFrom, updatedTSTo)
 			if result.%Next() {
 				set jsonPipe.errors = result.%GetData(1)
 			}
 			// ok
-			set result = stmStatus.%Execute($lb("DONE","OPERATING","STAGING","INGESTING"), pipe, 0)
+			set result = stmStatus.%Execute($lb("DONE","OPERATING","STAGING","INGESTING"), pipe, 0, updatedTSFrom, updatedTSTo)
 			if result.%Next() {
 				set jsonPipe.ok = result.%GetData(1)
 			}
 			// warning
-			set result = stmWarning.%Execute("WARNING", pipe, 0)
+			set result = stmWarning.%Execute("WARNING", pipe, 0, updatedTSFrom, updatedTSTo)
 			if result.%Next() {
 				set jsonPipe.warnings = result.%GetData(1)
 			}
