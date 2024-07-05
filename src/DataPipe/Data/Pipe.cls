@@ -20,26 +20,6 @@ Property SecurityResource As %String;
 
 Index CodeIdx On Code [ IdKey ];
 
-/// Read object and export to JSON
-ClassMethod toJSON(id As %Integer = "") As %Status
-{
-	set ret = $$$OK
-	try {
-		// check that user can access this pipe
-		$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
-		set idObj=""
-		&sql(SELECT %id INTO :idObj FROM DataPipe_Data.Inbox WHERE id = :id and Code %inlist :permittedPipes)
-		if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
-
-		// return default restforms implementation
-		return ##super(id)
-		
-	} catch ex {
-		set ret = ex.AsStatus()
-	}
-	quit ret
-}
-
 /// RESTForms2 query /form/objects/DataPipe.Data.Pipe/custom/find
 ClassMethod customqueryFIND() As %String
 {
@@ -48,7 +28,7 @@ ClassMethod customqueryFIND() As %String
 	set collation = $get(%request.Data("collation",1))
 	
 	// filter permitted pipes only
-	$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
+	set permittedPipes = ##class(DataPipe.Data.Pipe).PermittedPipes()
 	if $listlength(permittedPipes) > 0 {
         set:filter'="" filter = filter_" "
 		set filter = "Code in "_$listtostring(permittedPipes, "~")
@@ -62,29 +42,24 @@ ClassMethod customqueryFIND() As %String
 }
 
 /// Returns actual pipes that user is permitted to use
-/// do ##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
-ClassMethod GetPermittedPipes(pPermission As %String, Output pPermittedPipes) As %Status
+/// zwrite ##class(DataPipe.Data.Pipe).PermittedPipes()
+/// SELECT DataPipe_Data.Pipe_PermittedPipes()
+ClassMethod PermittedPipes(pPermission As %String = "READ") As %List [ SqlProc ]
 {
-    set ret = $$$OK
-    try {
-        set pPermittedPipes = ""
+	set sql = "select %id, SecurityResource from DataPipe_Data.Pipe"
+	set statement = ##class(%SQL.Statement).%New()
+	$$$ThrowOnError(statement.%Prepare(sql))
 
-        set sql = "select %id, SecurityResource from DataPipe_Data.Pipe"
-        set statement = ##class(%SQL.Statement).%New()
-        $$$ThrowOnError(statement.%Prepare(sql))
-
-        set result = statement.%Execute()
-        while result.%Next() {
-            set pipeId = result.%GetData(1)
-            set resource = result.%GetData(2)
-            if ((resource="") || ##class(%SYSTEM.Security).Check(resource, pPermission)) {
-                set pPermittedPipes = pPermittedPipes_$lb(pipeId)
-            }
-        }
-    } catch ex {
-        set ret = ex.AsStatus()
-    }
-    quit ret
+	set result = statement.%Execute()
+	set permittedPipes = ""
+	while result.%Next() {
+		set pipeId = result.%GetData(1)
+		set resource = result.%GetData(2)
+		if ((resource="") || ##class(%SYSTEM.Security).Check(resource, pPermission)) {
+			set permittedPipes = permittedPipes_$lb(pipeId)
+		}
+	}
+  	return permittedPipes
 }
 
 Storage Default

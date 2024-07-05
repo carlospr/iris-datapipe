@@ -64,102 +64,6 @@
   </Roles>
   <SQLPrivileges>
     <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Inbox</SQLObject>
-    <Privilege>i</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Inbox</SQLObject>
-    <Privilege>s</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Inbox</SQLObject>
-    <Privilege>u</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Ingestion</SQLObject>
-    <Privilege>i</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Ingestion</SQLObject>
-    <Privilege>s</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Ingestion</SQLObject>
-    <Privilege>u</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Oper</SQLObject>
-    <Privilege>i</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Oper</SQLObject>
-    <Privilege>s</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Oper</SQLObject>
-    <Privilege>u</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Staging</SQLObject>
-    <Privilege>i</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Staging</SQLObject>
-    <Privilege>s</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
-    <SQLObject>1,DataPipe_Data.Staging</SQLObject>
-    <Privilege>u</Privilege>
-    <Grantee>DataPipe_Admin</Grantee>
-    <Grantor>SuperUser</Grantor>
-    <Grantable>0</Grantable>
-  </SQLPrivileges>
-  <SQLPrivileges>
-    <Namespace>DPIPE</Namespace>
     <SQLObject>1,DataPipe_Data.Pipe</SQLObject>
     <Privilege>i</Privilege>
     <Grantee>DataPipe_Admin</Grantee>
@@ -178,6 +82,38 @@
     <Namespace>DPIPE</Namespace>
     <SQLObject>1,DataPipe_Data.Pipe</SQLObject>
     <Privilege>u</Privilege>
+    <Grantee>DataPipe_Admin</Grantee>
+    <Grantor>SuperUser</Grantor>
+    <Grantable>0</Grantable>
+  </SQLPrivileges>
+  <SQLPrivileges>
+    <Namespace>DPIPE</Namespace>
+    <SQLObject>3,DataPipe_Data.VInbox</SQLObject>
+    <Privilege>s</Privilege>
+    <Grantee>DataPipe_Admin</Grantee>
+    <Grantor>SuperUser</Grantor>
+    <Grantable>0</Grantable>
+  </SQLPrivileges>
+  <SQLPrivileges>
+    <Namespace>DPIPE</Namespace>
+    <SQLObject>3,DataPipe_Data.VIngestion</SQLObject>
+    <Privilege>s</Privilege>
+    <Grantee>DataPipe_Admin</Grantee>
+    <Grantor>SuperUser</Grantor>
+    <Grantable>0</Grantable>
+  </SQLPrivileges>
+  <SQLPrivileges>
+    <Namespace>DPIPE</Namespace>
+    <SQLObject>3,DataPipe_Data.VOper</SQLObject>
+    <Privilege>s</Privilege>
+    <Grantee>DataPipe_Admin</Grantee>
+    <Grantor>SuperUser</Grantor>
+    <Grantable>0</Grantable>
+  </SQLPrivileges>
+  <SQLPrivileges>
+    <Namespace>DPIPE</Namespace>
+    <SQLObject>3,DataPipe_Data.VStaging</SQLObject>
+    <Privilege>s</Privilege>
     <Grantee>DataPipe_Admin</Grantee>
     <Grantor>SuperUser</Grantor>
     <Grantable>0</Grantable>

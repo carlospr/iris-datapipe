@@ -80,24 +80,13 @@ Index ElementIdx On Element;
 
 Index SubjectIdx On Subject;
 
-/// Read object and export to JSON
-ClassMethod toJSON(id As %Integer = "") As %Status
+/// Open callback. Check user can access record in view
+Method %OnOpen() As %Status [ Private, ServerOnly = 1 ]
 {
-	set ret = $$$OK
-	try {
-		// check that user can access this pipe
-		$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
-		set idObj=""
-		&sql(SELECT %id INTO :idObj FROM DataPipe_Data.Inbox WHERE id = :id and Pipe %inlist :permittedPipes)
-		if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
-
-		// return default restforms implementation
-		return ##super(id)
-		
-	} catch ex {
-		set ret = ex.AsStatus()
-	}
-	quit ret
+	set id = ..%Id()
+    &sql(SELECT id INTO :idObj FROM DataPipe_Data.VInbox WHERE id = :id)
+	if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
+	return $$$OK
 }
 
 /// RESTForms2 query /form/objects/DataPipe.Data.Inbox/custom/find
@@ -106,17 +95,11 @@ ClassMethod customqueryFIND() As %String
 	// get parameters
 	set filter = $get(%request.Data("filter",1))
 	set collation = $get(%request.Data("collation",1))
-	
-	// filter permitted pipes only
-	$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
-	if $listlength(permittedPipes) > 0 {
-		set filter = filter_" Pipe in "_$listtostring(permittedPipes, "~")
-	}
 
 	// where
 	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Inbox", .where))
 	
-	set sql = "SELECT UpdatedTS, Id, Source, Pipe, MsgId, Element, Subject, Ignored, Status, StagingStatus, OperStatus, ValidationErrors JSON@ValidationErrors, OperErrors JSON@OperErrors, OperRetries FROM DataPipe_Data.Inbox "_where
+	set sql = "SELECT UpdatedTS, Id, Source, Pipe, MsgId, Element, Subject, Ignored, Status, StagingStatus, OperStatus, ValidationErrors JSON@ValidationErrors, OperErrors JSON@OperErrors, OperRetries FROM DataPipe_Data.VInbox "_where
 	return sql
 }
 

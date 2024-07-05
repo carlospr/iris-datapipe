@@ -42,6 +42,15 @@ Relationship Opers As Oper(%JSONREFERENCE = "ID") [ Cardinality = many, Inverse 
 /// Index
 Index IngestionIndex On Ingestion;
 
+/// Open callback. Check user can access record in view
+Method %OnOpen() As %Status [ Private, ServerOnly = 1 ]
+{
+	set id = ..%Id()
+    &sql(SELECT id INTO :idObj FROM DataPipe_Data.VStaging WHERE id = :id)
+	if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
+	return $$$OK
+}
+
 /// RESTForms2 query /form/objects/DataPipe.Data.Staging/custom/find
 ClassMethod customqueryFIND() As %String
 {
@@ -49,37 +58,11 @@ ClassMethod customqueryFIND() As %String
 	set filter = $get(%request.Data("filter",1))
 	set collation = $get(%request.Data("collation",1))
 	
-	// filter permitted pipes only
-	$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
-	if $listlength(permittedPipes) > 0 {
-		set filter = filter_" Ingestion->Inbox->Pipe in "_$listtostring(permittedPipes, "~")
-	}
-
 	// where
 	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Staging", .where))
 	
-	set sql = "SELECT Id, CreatedTS, HeaderId, Status, ValidationErrorsJson JSON@ValidationErrorsJson FROM DataPipe_Data.Staging "_where
+	set sql = "SELECT Id, CreatedTS, HeaderId, Status, ValidationErrorsJson JSON@ValidationErrorsJson FROM DataPipe_Data.VStaging "_where
 	return sql
-}
-
-/// Read object and export to JSON
-ClassMethod toJSON(id As %Integer = "") As %Status
-{
-	set ret = $$$OK
-	try {
-		// check that user can access this pipe
-		$$$ThrowOnError(##class(DataPipe.Data.Pipe).GetPermittedPipes("READ", .permittedPipes))
-		set idObj=""
-		&sql(SELECT %id INTO :idObj FROM DataPipe_Data.Staging WHERE id = :id and Ingestion->Inbox->Pipe %inlist :permittedPipes)
-		if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
-
-		// return default restforms implementation
-		return ##super(id)
-		
-	} catch ex {
-		set ret = ex.AsStatus()
-	}
-	quit ret
 }
 
 /// Serialize validation errors. Serialized errors will be used in UI.
