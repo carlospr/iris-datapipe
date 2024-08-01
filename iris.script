@@ -9,6 +9,9 @@
     set prop("AutheEnabled")=48
     do ##class(Security.Services).Modify("%Service_CallIn",.prop)
 
+    // install ipm
+    set r=##class(%Net.HttpRequest).%New(),r.Server="pm.community.intersystems.com",r.SSLConfiguration="ISC.FeatureTracker.SSL.Config" d r.Get("/packages/zpm/latest/installer"),$system.OBJ.LoadStream(r.HttpResponse.Data,"c")
+
     // create ns for dev environment
     do $SYSTEM.OBJ.Load("/opt/irisapp/Installer.cls", "ck") 
     
@@ -29,9 +32,6 @@
     // modify restforms2 abstract: convert to UTF8 and HandleCorsRequest (useful for dev environment)
     do $system.OBJ.Load("/opt/irisapp/src/Form/REST/Abstract.cls", "ck") 
     
-    // install webterminal
-    zpm "install webterminal"
-
     // auto start interop production
     set production = "DataPipe.Test.Production"
     set ^Ens.Configuration("csp","LastProduction") = production
