@@ -36,7 +36,7 @@ Open [DataPipe.Test.Production](http://localhost:52773/csp/dpipe/EnsPortal.Produ
 ## Generate some sample data
 Now you can generate some sample data that will be processed in your pipes.
 
-* Open an interactive [WebTerminal](http://localhost:52773/terminal/) session.
+* Open an interactive session (terminal).
 * Generate sample `HL7-ADT` messages
 
 ```objectscript
