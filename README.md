@@ -23,8 +23,8 @@ INSERT INTO DataPipe_Data.Pipe (Code, Description, SecurityResource) values ('HL
 ```
 
 ```sql
--- create a pipe for a dummy REST API
-INSERT INTO DataPipe_Data.Pipe (Code, Description) values ('DUMMY-API', 'A REST API Pipe')
+-- create a pipe for a REST API
+INSERT INTO DataPipe_Data.Pipe (Code, Description) values ('REST-API', 'A REST API Pipe')
 ```
 
 ## Start an interoperability production
@@ -41,6 +41,12 @@ Now you can generate some sample data that will be processed in your pipes.
 
 ```objectscript
 do ##class(DataPipe.Test.HL7.Helper).GenerateFilesHL7ADT(100)
+```
+
+* Generate sample `REST-API` messages
+
+```objectscript
+do ##class(DataPipe.Test.REST.Helper).SendHTTPRequests(200)
 ```
 
 You can have a look at the [DataPipe.Test.Production](http://localhost:52773/csp/dpipe/EnsPortal.ProductionConfig.zen?PRODUCTION=DataPipe.Test.Production) and see how messages has been processed.

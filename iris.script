@@ -20,10 +20,11 @@
     set vars("CodeDBPath")="/opt/dpipe/db/CODE"
     do ##class(App.Installer).CreateNamespace(.vars)
 
-    // import sample users, roles, resources
+    // import sample webapps, users, roles, resources
     write ##class(Security.Resources).Import("/opt/irisapp/install/resources.xml")
     write ##class(Security.Roles).Import("/opt/irisapp/install/roles.xml")
     write ##class(Security.Users).Import("/opt/irisapp/install/users.xml")
+    write ##class(Security.Applications).Import("/opt/irisapp/install/webapps.xml")
 
     // install DataPipe (zpm)
     set $namespace = "DPIPE"
