@@ -56,6 +56,10 @@
         <Permission>7</Permission>
       </Resource>
       <Resource>
+        <Name>DP_MENU_PIPELIST</Name>
+        <Permission>7</Permission>
+      </Resource>
+      <Resource>
         <Name>DP_PIPE_HL7ADT</Name>
         <Permission>7</Permission>
       </Resource>
