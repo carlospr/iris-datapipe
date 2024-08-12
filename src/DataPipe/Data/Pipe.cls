@@ -31,7 +31,7 @@ ClassMethod customqueryFIND() As %String
 	set permittedPipes = ##class(DataPipe.Data.Pipe).PermittedPipes()
 	if $listlength(permittedPipes) > 0 {
         set:filter'="" filter = filter_" "
-		set filter = "Code in "_$listtostring(permittedPipes, "~")
+		set filter = filter_"Code in "_$listtostring(permittedPipes, "~")
 	}
 
 	// where
