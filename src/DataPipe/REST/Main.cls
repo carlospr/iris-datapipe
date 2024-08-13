@@ -6,7 +6,9 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Routes>
 <!-- restforms2 -->
 <Map Prefix="/rf2" Forward="Form.REST.Main"/>
-<!-- datapipe -->
+<!-- object operations (e.g. CRUD) -->
+<Map Prefix="/objects" Forward="DataPipe.REST.Objects"/>
+<!-- other actions -->
 <Route Url="/login" Method="POST" Call="doLogin"/>
 <Route Url="/getUserInfo" Method="GET" Call="getUserInfo"/>
 <Route Url="/inboxActivity" Method="GET" Call="getInboxActivitySummary"/>

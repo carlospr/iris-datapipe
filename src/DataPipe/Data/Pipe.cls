@@ -37,7 +37,7 @@ ClassMethod customqueryFIND() As %String
 	// where
 	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Pipe", .where))
 	
-	set sql = "SELECT Code, Description FROM DataPipe_Data.Pipe "_where
+	set sql = "SELECT Code, Description, SecurityResource FROM DataPipe_Data.Pipe "_where
 	return sql
 }
 
