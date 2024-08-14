@@ -97,7 +97,7 @@ Method GetErrorInfo()
         set ..ErrorText = errorText
 
         // update status
-        set ..Oper.Staging.Ingestion.Inbox.Status = "ERROR-OPER"
+        set ..Oper.Staging.Ingestion.Inbox.Status = "ERROR-OPERATING"
         $$$ThrowOnError(..Oper.Staging.Ingestion.Inbox.%Save())
 
     } catch ex {

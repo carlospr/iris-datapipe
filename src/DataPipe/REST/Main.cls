@@ -14,6 +14,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Route Url="/inboxActivity" Method="GET" Call="getInboxActivitySummary"/>
 <Route Url="/resendMessage/:headerId" Method="POST" Call="resendMessage"/>
 <Route Url="/ignore/:id" Method="PUT" Call="ignore"/>
+<Route Url="/operRequest/:headerId" Method="PUT" Call="updateOperRequest"/>
 </Routes>
 }
 
@@ -139,6 +140,36 @@ ClassMethod getUserInfo() As %Status
 		set ret = ex.AsStatus()
 	}
 	quit ret
+}
+
+/// Updates an OperRequest.
+/// This is used when manually editing normalized data
+ClassMethod updateOperRequest(headerId As %String = "") As %Status
+{
+	set ret = $$$OK
+    try {
+		if '##class(%SYSTEM.Security).Check("DP_ADMIN", "USE") {
+			set %response.Status=..#HTTP401UNAUTHORIZED
+			quit
+		}
+
+		// get header and operRequest message
+		set header = ##class(Ens.MessageHeader).%OpenId(headerId)
+		set operRequest = ##class(DataPipe.Msg.OperReq).%OpenId(header.MessageBodyId)
+
+		// override normalized data 
+		$$$ThrowOnError(operRequest.data.ModelNormData.CopyFromAndSave(%request.Content))
+		
+		// resend OperRequest
+		do $system.Security.Login("_Ensemble")
+        $$$ThrowOnError(##class(Ens.MessageHeader).NewDuplicatedMessage(.duplicatedHeader, headerId, ""))
+		$$$ThrowOnError(##class(Ens.Queue).EnQueue(duplicatedHeader,1))
+
+    } catch ex {
+        set ret = ex.AsStatus()
+    }
+	
+	return ret
 }
 
 }

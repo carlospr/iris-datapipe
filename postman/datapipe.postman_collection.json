@@ -178,6 +178,138 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Get Preference",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"Code\": \"TEST\",\n    \"Description\": \"mod1\",\n    \"SecurityResource\": \"\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/dpipe/api/objects/DataPipe.Data.Preference/user/superuser/test",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"dpipe",
+						"api",
+						"objects",
+						"DataPipe.Data.Preference",
+						"user",
+						"superuser",
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set Preference",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "SYS",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "superuser",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"value\": \"blablabla2\"\n}",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/dpipe/api/objects/DataPipe.Data.Preference/user/superuser/test",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"dpipe",
+						"api",
+						"objects",
+						"DataPipe.Data.Preference",
+						"user",
+						"superuser",
+						"test"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update OperRequest",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "SYS",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "superuser",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"XRequestId\":\"7741A03F-5953-11EF-A398-0242AC140002\",\n  \"XForwardedHost\":\"client-I TechLyLyLyTwoMuch U\",\n  \"SSN\":\"111-222-3333\",\n  \"Name\":\"AAAAA\",\n  \"Surname\":\"CCCCC\",\n  \"Company\":\"MANUALLY EDITED\",\n  \"DOB\":\"2010-12-16\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/dpipe/api/operRequest/1882",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"dpipe",
+						"api",
+						"operRequest",
+						"1882"
+					]
+				}
+			},
+			"response": []
 		}
 	],
 	"auth": {
