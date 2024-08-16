@@ -295,7 +295,7 @@
 					}
 				},
 				"url": {
-					"raw": "http://{{host}}:{{port}}/dpipe/api/operRequest/1882",
+					"raw": "http://{{host}}:{{port}}/dpipe/api/operRequest/1889",
 					"protocol": "http",
 					"host": [
 						"{{host}}"
@@ -305,7 +305,97 @@
 						"dpipe",
 						"api",
 						"operRequest",
-						"1882"
+						"1889"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ignore",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "SYS",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "superuser",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n    \"ids\": [ 999999, 33 ] \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/dpipe/api/ignore",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"dpipe",
+						"api",
+						"ignore"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "repeat",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "SYS",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "superuser",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \n    \"ids\": [ 33 ],\n    \"type\": \"ingestion\" \n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/dpipe/api/repeat",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"dpipe",
+						"api",
+						"repeat"
 					]
 				}
 			},
