@@ -12,8 +12,8 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Route Url="/login" Method="POST" Call="doLogin"/>
 <Route Url="/getUserInfo" Method="GET" Call="getUserInfo"/>
 <Route Url="/inboxActivity" Method="GET" Call="getInboxActivitySummary"/>
-<Route Url="/resendMessage/:headerId" Method="POST" Call="resendMessage"/>
-<Route Url="/ignore/:id" Method="PUT" Call="ignore"/>
+<Route Url="/repeat" Method="POST" Call="multiRepeat"/>
+<Route Url="/ignore" Method="PUT" Call="multiIgnore"/>
 <Route Url="/operRequest/:headerId" Method="PUT" Call="updateOperRequest"/>
 </Routes>
 }
@@ -72,9 +72,18 @@ ClassMethod getInboxActivitySummary() As %Status
 	quit ret
 }
 
-/// Resend an Interop. message header
-/// This method is used to repeat Ingestion, Staging or Operation layers
-ClassMethod resendMessage(headerId As %String = "") As %Status
+/// Repeat an Inbox Ingestion, Staging or Operation
+/// This is used from UI: multi-select some inbox records and click "Repeat"
+/// 
+/// Input:
+///   { 
+///     "ids": [ 10, 33 ], 		/* inbox ids */		
+///     "type": "ingestion" 	/* ingestion|staging|operation */
+///   }
+/// Output:
+///   { "ok": { total: 2 , "ids": [ 10, 33 ] }
+///   { "error": { total: 0, "ids": [] }
+ClassMethod multiRepeat() As %Status
 {
 	set ret = $$$OK
     try {
@@ -83,9 +92,47 @@ ClassMethod resendMessage(headerId As %String = "") As %Status
 			quit
 		}
 
-		do $system.Security.Login("_Ensemble")
-        $$$ThrowOnError(##class(Ens.MessageHeader).NewDuplicatedMessage(.duplicatedHeader, headerId, ""))
-		$$$ThrowOnError(##class(Ens.Queue).EnQueue(duplicatedHeader,1))
+		// parse body
+        set input = {}.%FromJSON(%request.Content)
+		set output = { "ok": { "total": 0, "ids": [] },  "error": { "total": 0, "ids": [] }}
+
+		set iter = input.ids.%GetIterator()
+		while iter.%GetNext(.key, .value) { 
+			set id = value
+
+			try {
+				// open object
+				set obj = ##class(DataPipe.Data.Inbox).%OpenId(id,,.sc)
+				$$$ThrowOnError(sc)
+
+				// get header
+				set headerId = ""
+				if input.type="ingestion" {
+					set headerId = obj.LastIngestion.HeaderId
+				} elseif input.type="staging" {
+					set headerId = obj.LastStaging.HeaderId
+				} elseif input.type="operation" {
+					set headerId = obj.LastOper.HeaderId
+				} else {
+					$$$ThrowStatus($$$ERROR($$$GeneralError, "Invalid type"))
+				}
+				
+				// resend interop message
+				;do $system.Security.Login("_Ensemble")
+        		$$$ThrowOnError(##class(Ens.MessageHeader).NewDuplicatedMessage(.duplicatedHeader, headerId, ""))
+				$$$ThrowOnError(##class(Ens.Queue).EnQueue(duplicatedHeader,1))
+
+				set output.ok.total = output.ok.total + 1
+				do output.ok.ids.%Push(id)
+
+			} catch exErr {
+				set output.error.total = output.error.total + 1
+				do output.error.ids.%Push(id)
+			}
+		}
+
+		// return result
+		write output.%ToJSON()
 
     } catch ex {
         set ret = ex.AsStatus()
@@ -94,8 +141,17 @@ ClassMethod resendMessage(headerId As %String = "") As %Status
 	return ret
 }
 
-/// Change inbox ignored status
-ClassMethod ignore(id As %String) As %Status
+/// Change Inbox visibility status (Ignore property)
+/// This is used from UI: multi-select some inbox records and click "Hide"
+/// 
+/// Input:
+///   { 
+///     "ids": [ 10, 33 ]	/* inbox ids */ 
+///   }
+/// Output:
+///   { "ok": { total: 2 , "ids": [ 10, 33 ] }
+///   { "error": { total: 0, "ids": [] }
+ClassMethod multiIgnore() As %Status
 {
 	set ret = $$$OK
 	try {
@@ -104,12 +160,32 @@ ClassMethod ignore(id As %String) As %Status
 			quit
 		}
 		
-		// open object
-		set obj = ##class(DataPipe.Data.Inbox).%OpenId(id,,.sc)
-		$$$ThrowOnError(sc)
+		// parse body
+        set input = {}.%FromJSON(%request.Content)
+		set output = { "ok": { "total": 0, "ids": [] },  "error": { "total": 0, "ids": [] }}
+
+		set iter = input.ids.%GetIterator()
+		while iter.%GetNext(.key, .value) { 
+			set id = value
+
+			try {
+				// open object
+				set obj = ##class(DataPipe.Data.Inbox).%OpenId(id,,.sc)
+				$$$ThrowOnError(sc)
+				// change visibility
+				$$$ThrowOnError(obj.Ignore())
+
+				set output.ok.total = output.ok.total + 1
+				do output.ok.ids.%Push(id)
+
+			} catch exErr {
+				set output.error.total = output.error.total + 1
+				do output.error.ids.%Push(id)
+			}
+		}
 			
 		// return result
-		write "{""result"": """_obj.Ignore()_"""}"	
+		write output.%ToJSON()	
 				
 	} catch ex {
 		set ret = ex.AsStatus()
