@@ -117,8 +117,12 @@ Usually you will add:
 Have a look at a full example in [DataPipe.Test.Production.cls](src/DataPipe/Test/Production.cls)
 
 ## Users and privileges
-DataPipe uses different InterSystems IRIS privileges you can setup.
-Try the QuickStart container and have a look at how `dpadmin` user is defined within IRIS. 
+DataPipe uses different security resources you can assign to InterSystems IRIS user account:
+* `DP_ADMIN` - DataPipe Administrator
+* `DP_MENU_DASHBOARD` - Access to Dashboard menu option in UI
+* `DP_MENU_SEARCH` - Access to Search menu option in UI
+
+You can see a full example in the included container: check out the [DataPipe_Admin](http://localhost:52773/csp/sys/sec/%25CSP.UI.Portal.Role.zen?PID=DataPipe_Admin) role definition in InterSystems IRIS. 
 
 # Installation
 1) Install [IPM package manager](https://github.com/intersystems/ipm) if you don't have already done it.
@@ -131,5 +135,3 @@ DPIPE> zpm "install iris-datapipe"
 ```
 
 Want to contribute to this project? See [CONTRIB.md](./CONTRIB.md)
-
-TODO: update UI README: CORS related notes.
