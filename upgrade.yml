@@ -1,0 +1,16 @@
+services:
+  iris:
+    image: containers.intersystems.com/intersystems/irishealth-community:latest-em
+    container_name: datapipe-upgrade
+    init: true
+    ports:
+    - 9092:1972
+    - 9093:52773
+    volumes:
+    - .:/app
+    networks:
+      - datapipe-network
+
+networks:
+  datapipe-network:
+    name: datapipe-network

@@ -117,10 +117,25 @@ Usually you will add:
 Have a look at a full example in [DataPipe.Test.Production.cls](src/DataPipe/Test/Production.cls)
 
 ## Users and privileges
-DataPipe uses different security resources you can assign to InterSystems IRIS user account:
+DataPipe uses different security resources you can assign to InterSystems IRIS user account.
+
+Consider the following:
+
+Resources:
 * `DP_ADMIN` - DataPipe Administrator
 * `DP_MENU_DASHBOARD` - Access to Dashboard menu option in UI
 * `DP_MENU_SEARCH` - Access to Search menu option in UI
+
+SQL Tables:
+Give the user access to:
+* `DataPipe_Data.Pipe`
+
+SQL Views:
+Also, make sure the user can SELECT in these views:
+* `DataPipe_Data.VInbox`
+* `DataPipe_Data.VIngestion`
+* `DataPipe_Data.VOper`
+* `DataPipe_Data.VStaging`
 
 You can see a full example in the included container: check out the [DataPipe_Admin](http://localhost:52773/csp/sys/sec/%25CSP.UI.Portal.Role.zen?PID=DataPipe_Admin) role definition in InterSystems IRIS. 
 
@@ -133,5 +148,15 @@ You can see a full example in the included container: check out the [DataPipe_Ad
 ```
 DPIPE> zpm "install iris-datapipe"
 ```
+## DataPipeUI considerations
+
+When enabling [datapipeUI](https://github.com/intersystems-ib/iris-datapipeUI), you must consider the following:
+
+### CORS
+You must consider CORS restrictions.
+You can see a basic example [here](https://github.com/intersystems-ib/iris-datapipe/blob/master/src/Form/REST/Abstract.cls#L18) that allows any incoming connection (this is only recommended for testing).
+
+### Database resource
+Make sure that `CSPSystem` user in InterSystems IRIS have read permission on the resource of the database where you have installed DataPipe. 
 
 Want to contribute to this project? See [CONTRIB.md](./CONTRIB.md)
