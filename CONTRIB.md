@@ -8,13 +8,13 @@ Please, go through the following steps if you want to contribute to this project
 
 # Development Environment
 Build:
-```
-docker-compose build
+```bash
+docker compose build
 ```
 
 Run:
-```
-docker-compose up
+```bash
+docker compose up
 ```
 
 IRIS instance:
@@ -29,6 +29,11 @@ Generate 100 sample hl7 files for processing in test production:
 do ##class(DataPipe.Test.HL7.Helper).GenerateFilesHL7ADT(100)
 ```
 
+Generate 100 REST requests for processing in test production:
+```objectscript
+do ##class(DataPipe.Test.REST.Helper).SendHTTPRequests(100)
+```
+
 Delete `DataPipe.Data.*` data:
 ```objectscript
 do ##class(DataPipe.Test.Helper).KillData()
@@ -36,7 +41,7 @@ do ##class(DataPipe.Test.Helper).KillData()
 
 # Unit Tests
 Open an IRIS interactive session:
-```console
+```bash
 docker exec -it datapipe bash
 iris session IRIS
 ```
@@ -52,5 +57,5 @@ Run an specific test case:
 ```objectscript
 zn "dpipe"
 set ^UnitTestRoot = "/app/src/DataPipe/UnitTest"
-do ##class(%UnitTest.Manager).RunTest(":DataPipe.UnitTest.HL7", "/nodelete")
+do ##class(%UnitTest.Manager).RunTest(":DataPipe.UnitTest.HL7:TestDone", "/nodelete")
 ```
