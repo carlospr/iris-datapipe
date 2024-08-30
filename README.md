@@ -104,7 +104,7 @@ You can find examples here:
 * [DataPipe.Test.HL7.BP.HL7Ingestion.cls](src/DataPipe/Test/HL7/BP/HL7Ingestion.cls) - ingestion process for incoming HL7 messages
 * [DataPipe.Test.REST.BP.RESTIngestion.cls](src/DataPipe/Test/REST/BP/RESTIngestion.cls) - ingestion process for incoming REST messages
 
-#### 2.1) Add the rest of components
+#### 2.2) Add the rest of components
 Rest of the components are provided by DataPipe you need to add are provided by DataPipe.
 These components will call the different methods you have in your model.
 
