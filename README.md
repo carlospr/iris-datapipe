@@ -7,7 +7,7 @@ You can try out the included quickstart container to have a look at DataPipe.
 
 ## Run container
 ```bash
-docker compose up -d
+docker compose -f docker-compose.quickstart.yml up -d
 ```
 
 ## Interoperability production
@@ -117,27 +117,42 @@ Usually you will add:
 Have a look at a full example in [DataPipe.Test.Production.cls](src/DataPipe/Test/Production.cls)
 
 ## Users and privileges
-DataPipe uses different security resources you can assign to InterSystems IRIS user account.
 
-Consider the following:
-
-Resources:
+DataPipe uses different security resources you can assign to InterSystems IRIS user account:
 * `DP_ADMIN` - DataPipe Administrator
 * `DP_MENU_DASHBOARD` - Access to Dashboard menu option in UI
 * `DP_MENU_SEARCH` - Access to Search menu option in UI
 
-SQL Tables:
-Give the user access to:
-* `DataPipe_Data.Pipe`
+You can use the following as an **EXAMPLE** to set up the users in your system:
 
-SQL Views:
-Also, make sure the user can SELECT in these views:
-* `DataPipe_Data.VInbox`
-* `DataPipe_Data.VIngestion`
-* `DataPipe_Data.VOper`
-* `DataPipe_Data.VStaging`
+Create resources:
+```objectscript
+zn "%SYS"
+write ##class(Security.Resources).Create("DP_ADMIN","DataPipe Admin Privilege")
+write ##class(Security.Resources).Create("DP_MENU_DASHBOARD","DataPipe UI Dashboard Menu Access")
+write ##class(Security.Resources).Create("DP_MENU_SEARCH","DataPipe UI Search Menu Access")
+```
 
-You can see a full example in the included container: check out the [DataPipe_Admin](http://localhost:52773/csp/sys/sec/%25CSP.UI.Portal.Role.zen?PID=DataPipe_Admin) role definition in InterSystems IRIS. 
+Create a `DataPipe_Admin` role:
+```objectscript
+write ##class(Security.Roles).Create("DataPipe_Admin","DataPipe Administrator","DP_ADMIN:RWU,DP_MENU_DASHBOARD:RWU,DP_MENU_SEARCH:RWU,%DB_USER:RW,%DB_IRISSYS:R")
+```
+
+Grant access to tables and views to `DataPipe_Admin` role:
+```sql
+GRANT INSERT,SELECT,UPDATE ON DataPipe_Data.Pipe, DataPipe_Data.Preference TO DataPipe_Admin
+```
+
+```sql
+GRANT SELECT ON DataPipe_Data.VInbox, DataPipe_Data.VIngestion, DataPipe_Data.VStaging, DataPipe_Data.VOper TO DataPipe_Admin
+```
+
+Create a new user that belongs to `DataPipe_Admin` role:
+```objectscript
+write ##class(Security.Users).Create("dpadmin","DataPipe_Admin","demo")
+```
+
+You can also check out the [DataPipe_Admin](http://localhost:52773/csp/sys/sec/%25CSP.UI.Portal.Role.zen?PID=DataPipe_Admin) role definition in InterSystems IRIS. 
 
 # Installation
 1) Install [IPM package manager](https://github.com/intersystems/ipm) if you don't have already done it.
@@ -145,8 +160,8 @@ You can see a full example in the included container: check out the [DataPipe_Ad
 3) Switch to the namespace you want to install DataPipe.
 4) Install DataPipe using ipm:
 
-```
-DPIPE> zpm "install iris-datapipe"
+```objectscript
+zpm "install iris-datapipe"
 ```
 ## DataPipeUI considerations
 
@@ -157,6 +172,7 @@ You must consider CORS restrictions.
 You can see a basic example [here](https://github.com/intersystems-ib/iris-datapipe/blob/master/src/Form/REST/Abstract.cls#L18) that allows any incoming connection (this is only recommended for testing).
 
 ### Database resource
-Make sure that `CSPSystem` user in InterSystems IRIS have read permission on the resource of the database where you have installed DataPipe. 
+Make sure that `CSPSystem` user in InterSystems IRIS have read permission on the resource of the database where you have installed DataPipe.
 
-Want to contribute to this project? See [CONTRIB.md](./CONTRIB.md)
+# Upgrading from 0.x version to 2.x version
+See [CONTRIB.md](./CONTRIB.md) *Testing Upgrade from DataPipe 0.0.2 to DataPipe 2.x* section 
