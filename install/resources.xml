@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ResourcesExport>
+  <Resources>
+    <Name>DP_ADMIN</Name>
+    <PublicPermission>0</PublicPermission>
+    <Type>2147483648</Type>
+    <Version>1</Version>
+  </Resources>
+  <Resources>
+    <Name>DP_MENU_DASHBOARD</Name>
+    <PublicPermission>0</PublicPermission>
+    <Type>2147483648</Type>
+    <Version>1</Version>
+  </Resources>
+  <Resources>
+    <Name>DP_MENU_SEARCH</Name>
+    <PublicPermission>0</PublicPermission>
+    <Type>2147483648</Type>
+    <Version>1</Version>
+  </Resources>
+  <Resources>
+    <Name>DP_PIPE_HL7ADT</Name>
+    <PublicPermission>0</PublicPermission>
+    <Type>2147483648</Type>
+    <Version>1</Version>
+  </Resources>
+</ResourcesExport>

@@ -3,7 +3,7 @@ Class DataPipe.Data.Oper Extends (%Persistent, %XML.Adaptor, Form.Adaptor)
 
 Parameter FORMNAME = "Oper";
 
-Parameter OBJPERMISSIONS As %String = "CRUD";
+Parameter OBJPERMISSIONS As %String = "R";
 
 Parameter DISPLAYPROPERTY As %String = "Id";
 
@@ -42,10 +42,27 @@ Relationship Staging As Staging(%JSONREFERENCE = "ID") [ Cardinality = one, Inve
 /// Index
 Index StagingIndex On Staging;
 
-/// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Oper/find
-ClassMethod queryFIND() As %String
+/// Open callback. Check user can access record in view
+Method %OnOpen() As %Status [ Private, ServerOnly = 1 ]
 {
-  quit "Id, CreatedTS, HeaderId, Status, OperErrorsJson JSON@OperErrorsJson "
+	set id = ..%Id()
+    &sql(SELECT id INTO :idObj FROM DataPipe_Data.VOper WHERE id = :id)
+	if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
+	return $$$OK
+}
+
+/// RESTForms2 query /form/objects/DataPipe.Data.Oper/custom/find
+ClassMethod customqueryFIND() As %String
+{
+	// get parameters
+	set filter = $get(%request.Data("filter",1))
+	set collation = $get(%request.Data("collation",1))
+	
+	// where
+	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Oper", .where))
+	
+	set sql = "SELECT Id, CreatedTS, HeaderId, Status, OperErrorsJson JSON@OperErrorsJson FROM DataPipe_Data.VOper "_where
+	return sql
 }
 
 /// Serialize oper errors. Serialized errors will be used in UI.

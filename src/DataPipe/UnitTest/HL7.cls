@@ -11,6 +11,13 @@ Parameter WaitTime = .5;
 /// secs to wait for a FIFO retry
 Parameter WaitTimeFIFO = 5;
 
+/// Create Pipes before running tests 
+Method OnBeforeAllTests() As %Status
+{
+  &sql(INSERT INTO DataPipe_Data.Pipe (Code, Description, SecurityResource) values ('HL7-ADT', 'Sample HL7 Pipe', 'DP_PIPE_HL7ADT'))
+  quit $$$OK
+}
+
 /// Delete data after running tests
 Method OnAfterAllTests() As %Status
 {
@@ -21,10 +28,7 @@ Method OnAfterAllTests() As %Status
 /// input: DynamicObject that specify main properties
 /// target: target business host to send the message in the test production
 /// inbox (output): related Inbox record 
-Method SendTestMessage(
-	input As %DynamicObject,
-	target As %String,
-	Output inbox) As %Status
+Method SendTestMessage(input As %DynamicObject, target As %String, Output inbox) As %Status
 {
   // create test message
   set sc = ##class(DataPipe.Test.HL7.Helper).GenerateHL7(input, 0, "/app/data/ADTA08.hl7", "2.5:ADT_A01", .hl7)

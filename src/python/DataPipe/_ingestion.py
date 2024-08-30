@@ -12,7 +12,7 @@ import os
 class _Ingestion(BusinessProcess):
 
     # mapping from iris.DataPipe.Data.InboxAttributes to dict
-    _att = {"Flow":"flow","Source":"source","MsgId":"msg_id","Element":"element","Subject":"subject"}
+    _att = {"Pipe":"pipe","Source":"source","MsgId":"msg_id","Element":"element","Subject":"subject"}
 
     def ingest(self):
         try:
@@ -28,7 +28,6 @@ class _Ingestion(BusinessProcess):
             raise ex
         
     def init_inbox(self):
-
         inbox_obj = iris.ref(None)
         iris.cls('DataPipe.Data.Inbox').GetByKeyAttributes(
                 self._dict_to_inbox_attributes(self.inbox_attributes),
@@ -36,7 +35,7 @@ class _Ingestion(BusinessProcess):
             )
         inbox_obj = inbox_obj.value
         if inbox_obj is None or inbox_obj == "":
-            # return new inbox 
+            # return new inbox
             inbox_obj = iris.cls('DataPipe.Data.Inbox')._New()
             inbox_obj.CreatedTS = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             inbox_obj.UpdatedTS = inbox_obj.CreatedTS
@@ -46,7 +45,7 @@ class _Ingestion(BusinessProcess):
         
         inbox_obj.PopulateAttributes(self._dict_to_inbox_attributes(self.inbox_attributes))
         self.inbox = inbox_obj
-
+        
 
     def init_ingestion(self):
 
@@ -107,7 +106,9 @@ class _Ingestion(BusinessProcess):
     def _dict_to_inbox_attributes(self, dict):
         ret = iris.cls('DataPipe.Data.InboxAttributes')._New()
         for att in self._att:
-            setattr(ret, att, dict[self._att[att]])
+            if att != "Pipe":
+                setattr(ret, att, dict[self._att[att]])
+        ret.Pipe = iris.cls('DataPipe.Data.Pipe')._OpenId(dict[self._att["Pipe"]])
         return ret
     
     def _datetime_to_string(self, dt: 'datetime'):

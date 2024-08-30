@@ -17,7 +17,7 @@ class HL7Ingestion(IngestionProcess):
 
         #them map attributes from the inbox
         self.inbox_attributes = {
-            "flow": "HL7",
+            "pipe": "HL7-ADT",
             "source": "HIS",
             "msg_id": request.GetSegmentAt(1).GetValueAt(10),
             "element":request.GetSegmentAt(4).GetValueAt(19),

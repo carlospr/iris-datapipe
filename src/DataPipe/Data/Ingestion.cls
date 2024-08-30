@@ -3,7 +3,7 @@ Class DataPipe.Data.Ingestion Extends (%Persistent, %XML.Adaptor, Form.Adaptor)
 
 Parameter FORMNAME = "Ingestion";
 
-Parameter OBJPERMISSIONS As %String = "CRUD";
+Parameter OBJPERMISSIONS As %String = "R";
 
 Parameter DISPLAYPROPERTY As %String = "Id";
 
@@ -45,10 +45,27 @@ Relationship Stagings As Staging(%JSONREFERENCE = "ID") [ Cardinality = many, In
 /// Index
 Index InboxIndex On Inbox;
 
-/// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Ingestion/find
-ClassMethod queryFIND() As %String
+/// Open callback. Check user can access record in view
+Method %OnOpen() As %Status [ Private, ServerOnly = 1 ]
 {
-  quit "Id, CreatedTS, HeaderId "
+	set id = ..%Id()
+    &sql(SELECT id INTO :idObj FROM DataPipe_Data.VIngestion WHERE id = :id)
+	if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
+	return $$$OK
+}
+
+/// RESTForms2 query /form/objects/DataPipe.Data.Ingestion/custom/find
+ClassMethod customqueryFIND() As %String
+{
+	// get parameters
+	set filter = $get(%request.Data("filter",1))
+	set collation = $get(%request.Data("collation",1))
+
+	// where
+	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Ingestion", .where))
+	
+	set sql = "SELECT Id, CreatedTS, HeaderId FROM DataPipe_Data.VIngestion "_where
+	return sql
 }
 
 Storage Default

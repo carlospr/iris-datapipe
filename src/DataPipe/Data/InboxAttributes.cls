@@ -4,8 +4,8 @@ Class DataPipe.Data.InboxAttributes Extends (%RegisteredObject, %XML.Adaptor)
 /// data source
 Property Source As %String(MAXLEN = "");
 
-/// data workflow
-Property Flow As %String(MAXLEN = "");
+/// data pipe
+Property Pipe As Pipe;
 
 /// message identifier
 Property MsgId As %String(MAXLEN = "");
@@ -20,8 +20,8 @@ Method IsValid() As %Status
 {
 	set ret = $$$OK
 	try {
-		if ((..Source="")||(..Flow="")||(..MsgId="")) {
-			$$$ThrowStatus($$$ERROR($$$GeneralError, "Inbox Source, Flow and MsgId are required"))
+		if ((..Source="")||(..Pipe="")||(..MsgId="")) {
+			$$$ThrowStatus($$$ERROR($$$GeneralError, "Inbox Source, Pipe and MsgId are required"))
 		}
 
 	} catch ex {
@@ -34,8 +34,21 @@ Method PopulateAttributes(att As InboxAttributes) As %Status
 {
 	set ret = $$$OK
 	try {
+		// if Pipe is already an object
+		if (($isobject(att.Pipe)) && ($classname(att.Pipe)="DataPipe.Data.Pipe")) {
+			set ..Pipe = att.Pipe
+		}
+		// if not, assume is the id of an DataPipe.Data.Pipe object
+		else {
+			do ..PipeSetObjectId(att.Pipe)
+		}
+
+		// at this point, Pipe must be a valid object
+		if (('$isobject(..Pipe)) || ($classname(..Pipe)'="DataPipe.Data.Pipe")) {
+			$$$ThrowStatus($$$ERROR($$$GeneralError, "Invalid Pipe specified ("_..Pipe_")"))
+		}
+
 		set ..Source = att.Source
-		set ..Flow = att.Flow
 		set ..MsgId = att.MsgId
 		set ..Element = att.Element
 		set ..Subject = att.Subject

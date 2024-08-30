@@ -1,6 +1,4 @@
-# iris-datapipe development environment
-version: '3.7'
-
+# iris-datapipe quickstart environment
 services:
   datapipe:
     build:

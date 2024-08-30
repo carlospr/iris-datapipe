@@ -3,7 +3,7 @@ Class DataPipe.Data.Staging Extends (%Persistent, %XML.Adaptor, Form.Adaptor)
 
 Parameter FORMNAME = "Staging";
 
-Parameter OBJPERMISSIONS As %String = "CRUD";
+Parameter OBJPERMISSIONS As %String = "R";
 
 Parameter DISPLAYPROPERTY As %String = "Id";
 
@@ -42,10 +42,27 @@ Relationship Opers As Oper(%JSONREFERENCE = "ID") [ Cardinality = many, Inverse 
 /// Index
 Index IngestionIndex On Ingestion;
 
-/// Classmethod used by RESTForms2 query /form/objects/DataPipe.Data.Staging/find
-ClassMethod queryFIND() As %String
+/// Open callback. Check user can access record in view
+Method %OnOpen() As %Status [ Private, ServerOnly = 1 ]
 {
-  quit "Id, CreatedTS, HeaderId, Status, ValidationErrorsJson JSON@ValidationErrorsJson"
+	set id = ..%Id()
+    &sql(SELECT id INTO :idObj FROM DataPipe_Data.VStaging WHERE id = :id)
+	if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
+	return $$$OK
+}
+
+/// RESTForms2 query /form/objects/DataPipe.Data.Staging/custom/find
+ClassMethod customqueryFIND() As %String
+{
+	// get parameters
+	set filter = $get(%request.Data("filter",1))
+	set collation = $get(%request.Data("collation",1))
+	
+	// where
+	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Staging", .where))
+	
+	set sql = "SELECT Id, CreatedTS, HeaderId, Status, ValidationErrorsJson JSON@ValidationErrorsJson FROM DataPipe_Data.VStaging "_where
+	return sql
 }
 
 /// Serialize validation errors. Serialized errors will be used in UI.

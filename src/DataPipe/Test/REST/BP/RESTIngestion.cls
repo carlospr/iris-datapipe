@@ -1,28 +1,21 @@
 /// 
-Class DataPipe.Test.HL7.BP.HL7Ingestion Extends Ens.BusinessProcessBPL [ DependsOn = DataPipe.Ingestion.BP.IngestionManagerContext ]
+Class DataPipe.Test.REST.BP.RESTIngestion Extends Ens.BusinessProcessBPL [ DependsOn = DataPipe.Ingestion.BP.IngestionManagerContext ]
 {
-
-Storage Default
-{
-<Type>%Storage.Persistent</Type>
-}
 
 /// BPL Definition
 XData BPL [ XMLNamespace = "http://www.intersystems.com/bpl" ]
 {
-<process language='objectscript' request='EnsLib.HL7.Message' response='Ens.Response' contextsuperclass='DataPipe.Ingestion.BP.IngestionManagerContext' height='2000' width='2000' >
+<process language='objectscript' request='DataPipe.Test.REST.Msg.PersonReq' response='Ens.Response' contextsuperclass='DataPipe.Ingestion.BP.IngestionManagerContext' height='2000' width='2000' >
 <sequence xend='200' yend='1450' >
 <scope xpos='200' ypos='250' xend='200' yend='800' >
-<annotation><![CDATA[HL7 use case:
-- input = hl7 message
+<annotation><![CDATA[REST use case:
+- input = msg received in REST service
 - output = Model, InboxAttributes]]></annotation>
-<transform name='HL7 To InboxAttributes' class='DataPipe.Test.HL7.DT.A08ToInboxAttributes' source='request' target='context.InboxAttributes' xpos='200' ypos='350' />
+<transform name='PersonReq To InboxAttributes' class='DataPipe.Test.REST.DT.PersonReqToInboxAttributes' source='request' target='context.InboxAttributes' xpos='200' ypos='350' />
 <code name='Set InboxAttributes' xpos='200' ypos='450' >
-<![CDATA[ set context.InboxAttributes.Source = "HCIS"
- do context.InboxAttributes.PipeSetObjectId("HL7-ADT")
- ]]>
+<![CDATA[ do context.InboxAttributes.PipeSetObjectId("REST-API")]]>
 </code>
-<transform name='HL7 to Model' class='DataPipe.Test.HL7.DT.A08ToModel' source='request' target='context.Model' xpos='200' ypos='550' />
+<transform name='PersonReq to Model' class='DataPipe.Test.REST.DT.PersonReqToModel' source='request' target='context.Model' xpos='200' ypos='550' />
 <faulthandlers>
 <catchall xpos='200' ypos='650' xend='200' yend='350' >
 <code xpos='200' ypos='250' >
@@ -40,9 +33,9 @@ XData BPL [ XMLNamespace = "http://www.intersystems.com/bpl" ]
 <code name='Ingestion Manager' xpos='200' ypos='1000' >
 <![CDATA[ $$$ThrowOnError(context.IngestionManager())]]>
 </code>
-<call name='To Staging' target='HL7 Staging' async='1' xpos='200' ypos='1100' >
+<call name='To Staging' target='REST Staging' async='1' xpos='200' ypos='1100' >
 <request type='DataPipe.Msg.StagingReq' >
-<assign property="callrequest" value="context.StagingReq" action="set" />
+<assign property="callrequest" value="context.StagingReq" action="set" languageOverride="" />
 </request>
 <response type='Ens.Response' />
 </call>
@@ -57,6 +50,11 @@ XData BPL [ XMLNamespace = "http://www.intersystems.com/bpl" ]
 </scope>
 </sequence>
 </process>
+}
+
+Storage Default
+{
+<Type>%Storage.Persistent</Type>
 }
 
 }
