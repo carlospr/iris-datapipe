@@ -42,6 +42,8 @@ XData ProductionDefinition
   </Item>
   <Item Name="Person Operation" Category="Oper" ClassName="DataPipe.Oper.BO.OperationHandler" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="false" Schedule="">
   </Item>
+  <Item Name="REST Delayed Oper Update" Category="" ClassName="DataPipe.Test.REST.BP.DelayedProcessing" PoolSize="1" Enabled="true" Foreground="false" Comment="" LogTraceEvents="true" Schedule="">
+  </Item>
 </Production>
 }
 

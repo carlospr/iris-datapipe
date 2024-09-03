@@ -60,6 +60,10 @@ Method Validate(Output errorList As %List) As %Status
         // date of birth
         if ..DOB="" { 
             $$$AddError(errorList, "V001", "DOB required")
+        } else {
+            set yearDOB = $extract($zdate(..DOB,8),1,4)
+            if (yearDOB < 1930) $$$AddError(errorList, "V002", "DOB must be greater than 1930")
+            if (yearDOB < 1983) $$$AddError(errorList, "W083", "Warning! Older than 1983")
         }
 
         // model is invalid if errors (not warnings) found
@@ -89,7 +93,7 @@ Method GetOperation() As %Status
 
 /// Run final operation with the model
 /// This method can be used to persit data from the model to an operational data store
-Method RunOperation(Output errorList As %List, Output log As %Stream.Object, bOperation As Ens.BusinessOperation = "") As %Status
+Method RunOperation(Output errorList As %List, Output log As %Stream.Object, bOperation As Ens.BusinessOperation = "", Output delayedProcessing As %Boolean = 0) As %Status
 {
     #define AddError(%list, %code, %desc) set error = ##class(DataPipe.Data.ErrorInfo).%New() set error.Code=%code set error.Desc=%desc do %list.Insert(error)
     #define AddLog(%log, %msg) do %log.WriteLine("["_$zdt($h,3)_"] "_%msg)
@@ -114,6 +118,14 @@ Method RunOperation(Output errorList As %List, Output log As %Stream.Object, bOp
 
         TCOMMIT
         $$$AddLog(log, "Transaction Commited")
+
+        // you can send messages to other production components (while you are not on an open transaction)
+        // you can use this feature to continue processing the record in other component (delayed processing)
+        set delayedProcessing = 1
+        if $isobject(bOperation) {
+            set req = bOperation.OperRequest
+            $$$ThrowOnError(bOperation.SendRequestAsync("REST Delayed Oper Update", req))
+        }
 
     } catch ex {
         TROLLBACK 
