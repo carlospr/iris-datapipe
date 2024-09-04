@@ -13,11 +13,11 @@ XData BPL [ XMLNamespace = "http://www.intersystems.com/bpl" ]
 <code name='Update Operation' xpos='200' ypos='350' >
 <annotation><![CDATA[Inbox record will be updated]]></annotation>
 <![CDATA[ // simulate some time consuming task
- hang 1
+ hang .2
  
  // create a new log entry
  set log = ##class(%Stream.GlobalCharacter).%New()
- do log.WriteLine("["_$zdt($h,3)_"]  This has been updated later")
+ do log.WriteLine("["_$zdt($h,3)_"] This has been updated later in other Business Process")
  
  // update inbox
  $$$ThrowOnError(##class(DataPipe.Manager).UpdateOperation(request.GetInboxId(), 0, $$$OK, "", log))]]>

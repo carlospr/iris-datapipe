@@ -1,6 +1,12 @@
 Class DataPipe.Manager
 {
 
+/// Use this method to perform an update to a Inbox Operation stage
+/// inboxId: id of Inbox
+/// delayedProcessing: 0 if this is supposed to be the last update and you want to consider the Inbox DONE if OK, 1 if there will be further updates
+/// updSC: status of the update ($$$OK or error)
+/// updErrorList: list of errors
+/// updLog: stream with a log that will be appended to the Inbox Operation
 ClassMethod UpdateOperation(inboxId As %String, delayedProcessing As %Boolean, updSC As %Status, updErrorList As %List, updLog As %Stream.Object) As %Status
 {
     set ret = $$$OK
