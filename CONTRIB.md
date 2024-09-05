@@ -162,6 +162,8 @@ zpm "load /app"
 
 Delete WebApp "/dpipe/api/rf2"
 
+Make sure all your references to "Flow" field are transformed to "Pipe" field (e.g. in your data transformations)
+
 Migrate legacy Flows to Pipes:
 ```sql
 INSERT INTO DataPipe_Data.Pipe (Code, Description) SELECT Code, 'Migrated' FROM TempDataPipeMigration
