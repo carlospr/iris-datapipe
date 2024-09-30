@@ -61,7 +61,7 @@ ClassMethod customqueryFIND() As %String
 	// where
 	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Staging", .where))
 	
-	set sql = "SELECT Id, CreatedTS, HeaderId, Status, ValidationErrorsJson JSON@ValidationErrorsJson FROM DataPipe_Data.VStaging "_where
+	set sql = "SELECT Id, CreatedTS, HeaderId, Status, nvl(ValidationErrorsJson,'[]') JSON@ValidationErrorsJson FROM DataPipe_Data.VStaging "_where
 	return sql
 }
 

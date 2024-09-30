@@ -100,7 +100,7 @@ ClassMethod customqueryFIND() As %String
 	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Inbox", .where))
 	$$$ThrowOnError(##class(Form.JSON.SQL).ParseOrderBy(%request.Get("orderby"), "DataPipe.Data.Inbox", .orderBy))
 	
-	set sql = "SELECT UpdatedTS, Id, Source, Pipe, MsgId, Element, Subject, Ignored, Status, StagingStatus, OperStatus, ValidationErrors JSON@ValidationErrors, OperErrors JSON@OperErrors, OperRetries FROM DataPipe_Data.VInbox "_where_orderBy
+	set sql = "SELECT UpdatedTS, Id, Source, Pipe, MsgId, Element, Subject, Ignored, Status, StagingStatus, OperStatus, nvl(ValidationErrors,'[]') JSON@ValidationErrors, nvl(OperErrors,'[]') JSON@OperErrors, OperRetries FROM DataPipe_Data.VInbox "_where_orderBy
 	return sql
 }
 
