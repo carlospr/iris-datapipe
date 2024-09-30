@@ -35,7 +35,7 @@ XData BPL [ XMLNamespace = "http://www.intersystems.com/bpl" ]
 </code>
 <call name='To Staging' target='REST Staging' async='1' xpos='200' ypos='1100' >
 <request type='DataPipe.Msg.StagingReq' >
-<assign property="callrequest" value="context.StagingReq" action="set" languageOverride="" />
+<assign property="callrequest" value="context.StagingReq" action="set" />
 </request>
 <response type='Ens.Response' />
 </call>
