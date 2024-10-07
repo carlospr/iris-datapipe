@@ -12,6 +12,10 @@
         <Permission>3</Permission>
       </Resource>
       <Resource>
+        <Name>%DB_USER</Name>
+        <Permission>3</Permission>
+      </Resource>
+      <Resource>
         <Name>%DB_HSLIB</Name>
         <Permission>3</Permission>
       </Resource>

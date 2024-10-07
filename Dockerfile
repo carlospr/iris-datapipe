@@ -37,5 +37,6 @@ ENV IRISNAMESPACE "DPIPE"
 # run iris.script
 RUN iris start IRIS \
     && iris session IRIS < /opt/irisapp/iris.script \
+    && iop --init \
     && iop -m /opt/irisapp/src/python/Demo/settings.py \
     && iris stop IRIS quietly

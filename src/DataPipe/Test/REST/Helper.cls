@@ -11,7 +11,7 @@ Parameter USERNAME = "superuser";
 
 Parameter PASSWORD = "SYS";
 
-ClassMethod SendHTTPRequests(pNumRequests As %Integer = 1) As %Status
+ClassMethod SendHTTPRequests(pNumRequests As %Integer = 1, appName = "/test/api/message") As %Status
 {
     set ret = $$$OK
     try {
@@ -27,7 +27,7 @@ ClassMethod SendHTTPRequests(pNumRequests As %Integer = 1) As %Status
             set headers("X-Forwarded-For") = "client-"_##class(%PopulateUtils).Syllable()
             set headers("X-Request-ID") = $system.Util.CreateGUID()
 
-            set sc = ..Post("/test/api/message", .headers, body, .resp)
+            set sc = ..Post(appName, .headers, body, .resp)
             $$$ThrowOnError(sc)
 
             if resp.StatusCode '= 200 {

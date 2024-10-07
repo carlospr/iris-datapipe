@@ -35,6 +35,10 @@ Property LastStaging As Staging(%JSONREFERENCE = "ID");
 /// Ref. to last Oper
 Property LastOper As Oper(%JSONREFERENCE = "ID");
 
+/// Namespace where this record is processed
+/// This is useful when different namespaces map DataPipe package
+Property Namespace As %String [ InitialExpression = {$namespace} ];
+
 /// *Calculated* StagingStatus (from LastStaging). Used in queries from app
 Property StagingStatus As %String(MAXLEN = "") [ SqlComputeCode = { set {StagingStatus} = ##class(DataPipe.Data.Inbox).CalcSqlFieldById("LastStaging->Status", "N/A", {%%ID})
 }, SqlComputed, SqlComputeOnChange = %%UPDATE ];
@@ -79,6 +83,8 @@ Index MsgIdIdx On MsgId;
 Index ElementIdx On Element;
 
 Index SubjectIdx On Subject;
+
+Index NamespaceIdx On Namespace [ Type = bitmap ];
 
 /// Open callback. Check user can access record in view
 Method %OnOpen() As %Status [ Private, ServerOnly = 1 ]
@@ -223,6 +229,9 @@ Storage Default
 </Value>
 <Value name="18">
 <Value>OperErrors</Value>
+</Value>
+<Value name="19">
+<Value>Namespace</Value>
 </Value>
 </Data>
 <DataLocation>^DataPipe.Data.InboxD</DataLocation>

@@ -100,6 +100,8 @@ ClassMethod multiRepeat() As %Status
 			set %response.Status=..#HTTP401UNAUTHORIZED
 			quit
 		}
+		new $namespace
+		set defaultNs = $namespace
 
 		// parse body
         set input = {}.%FromJSON(%request.Content)
@@ -126,6 +128,13 @@ ClassMethod multiRepeat() As %Status
 					$$$ThrowStatus($$$ERROR($$$GeneralError, "Invalid type"))
 				}
 				
+				// change namespace, this is used when DataPipe is mapped to multiple namespaces
+				if obj.Namespace'="" {
+					set $namespace = obj.Namespace
+				} else {
+					set $namespace = defaultNs
+				}
+
 				// resend interop message
 				;do $system.Security.Login("_Ensemble")
         		$$$ThrowOnError(##class(Ens.MessageHeader).NewDuplicatedMessage(.duplicatedHeader, headerId, ""))

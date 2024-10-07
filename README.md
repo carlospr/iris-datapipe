@@ -116,6 +116,18 @@ Usually you will add:
 
 Have a look at a full example in [DataPipe.Test.Production.cls](src/DataPipe/Test/Production.cls)
 
+# Installation
+1) Install [IPM package manager](https://github.com/intersystems/ipm) if you don't have already done it.
+2) Create a new namespace (e.g. `DPIPE`)
+3) Switch to the namespace you want to install DataPipe.
+4) Install DataPipe using ipm:
+
+```objectscript
+zpm "install iris-datapipe"
+```
+
+5) Set up users and roles as needed (see next section).
+
 ## Users and privileges
 
 DataPipe uses different security resources you can assign to InterSystems IRIS user account:
@@ -154,15 +166,64 @@ write ##class(Security.Users).Create("dpadmin","DataPipe_Admin","demo")
 
 You can also check out the [DataPipe_Admin](http://localhost:52773/csp/sys/sec/%25CSP.UI.Portal.Role.zen?PID=DataPipe_Admin) role definition in InterSystems IRIS. 
 
-# Installation
-1) Install [IPM package manager](https://github.com/intersystems/ipm) if you don't have already done it.
-2) Create a new namespace (e.g. `DPIPE`)
-3) Switch to the namespace you want to install DataPipe.
-4) Install DataPipe using ipm:
+## Using DataPipe in multiple namespaces
+
+You can install DataPipe in one namespace and use it in different namespaces using the same UI.
+
+To do so, you need to:
+* Install DataPipe in source namespace
+* Map DataPipe and Restforms2 package and globals to target namespace
+* Grant access to tables and views on target namespace
+
+The following example uses the **quickstart container** to configure Datapipe also in `USER` namespace:
+
+1) DataPipe is already installed in `DPIPE` namespace.
+2) Map DataPipe and Restforms2 package and globals from `DPIPE` to `USER`:
 
 ```objectscript
-zpm "install iris-datapipe"
+zn "%SYS"
+
+// package mapping
+set props("Database")="DPIPE-DATA"
+write ##class(Config.MapPackages).Create("USER", "DataPipe", .props)
+write ##class(Config.MapPackages).Create("USER", "Form", .props)
+
+// global mapping
+write ##class(Config.MapGlobals).Create("USER", "DataPipe*", .props)
+write ##class(Config.MapGlobals).Create("USER", "Form*", .props)
+
+// routine mapping
+write ##class(Config.MapRoutines).Create("USER", "Form*", .props)
 ```
+
+3) Grant access to tables and views on `USER` namespace:
+
+```sql
+GRANT INSERT,SELECT,UPDATE ON DataPipe_Data.Pipe, DataPipe_Data.Preference TO DataPipe_Admin
+```
+
+```sql
+GRANT SELECT ON DataPipe_Data.VInbox, DataPipe_Data.VIngestion, DataPipe_Data.VStaging, DataPipe_Data.VOper TO DataPipe_Admin
+```
+
+4) Load a sample production in `USER` which already have DataPipe components:
+
+```objectscript
+zn "USER"
+do $system.OBJ.Load("/app/install/SampleProduction.cls", "ck")
+```
+
+5) Start the production
+
+6) Send a test message
+
+```objectscript
+zn "USER"
+write ##class(DataPipe.Test.REST.Helper).SendHTTPRequests(1, "/test/user/api/message")
+```
+
+6) Check datapipeUI
+
 ## DataPipeUI considerations
 
 When enabling [datapipeUI](https://github.com/intersystems-ib/iris-datapipeUI), you must consider the following:
