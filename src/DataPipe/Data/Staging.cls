@@ -46,7 +46,7 @@ Index IngestionIndex On Ingestion;
 Method %OnOpen() As %Status [ Private, ServerOnly = 1 ]
 {
 	set id = ..%Id()
-    &sql(SELECT id INTO :idObj FROM DataPipe_Data.VStaging WHERE id = :id)
+    &sql(SELECT id1 INTO :idObj FROM DataPipe_Data.VStaging WHERE id1 = :id)
 	if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
 	return $$$OK
 }
@@ -61,7 +61,7 @@ ClassMethod customqueryFIND() As %String
 	// where
 	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Staging", .where))
 	
-	set sql = "SELECT Id, CreatedTS, HeaderId, Status, nvl(ValidationErrorsJson,'[]') JSON@ValidationErrorsJson FROM DataPipe_Data.VStaging "_where
+	set sql = "SELECT Id1 Id, CreatedTS, HeaderId, Status, nvl(ValidationErrorsJson,'[]') JSON@ValidationErrorsJson FROM DataPipe_Data.VStaging "_where
 	return sql
 }
 

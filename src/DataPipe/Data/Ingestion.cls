@@ -49,7 +49,7 @@ Index InboxIndex On Inbox;
 Method %OnOpen() As %Status [ Private, ServerOnly = 1 ]
 {
 	set id = ..%Id()
-    &sql(SELECT id INTO :idObj FROM DataPipe_Data.VIngestion WHERE id = :id)
+    &sql(SELECT id1 INTO :idObj FROM DataPipe_Data.VIngestion WHERE id1 = :id)
 	if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
 	return $$$OK
 }
@@ -64,7 +64,7 @@ ClassMethod customqueryFIND() As %String
 	// where
 	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Ingestion", .where))
 	
-	set sql = "SELECT Id, CreatedTS, HeaderId FROM DataPipe_Data.VIngestion "_where
+	set sql = "SELECT Id1 Id, CreatedTS, HeaderId FROM DataPipe_Data.VIngestion "_where
 	return sql
 }
 

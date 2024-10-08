@@ -90,7 +90,7 @@ Index NamespaceIdx On Namespace [ Type = bitmap ];
 Method %OnOpen() As %Status [ Private, ServerOnly = 1 ]
 {
 	set id = ..%Id()
-    &sql(SELECT id INTO :idObj FROM DataPipe_Data.VInbox WHERE id = :id)
+    &sql(SELECT id1 INTO :idObj FROM DataPipe_Data.VInbox WHERE id1 = :id)
 	if idObj="" $$$ThrowStatus($$$ERROR($$$GeneralError, "Not authorized"))
 	return $$$OK
 }
@@ -106,7 +106,7 @@ ClassMethod customqueryFIND() As %String
 	$$$ThrowOnError(##class(Form.JSON.SQL).ParseWhere(filter, collation, "DataPipe.Data.Inbox", .where))
 	$$$ThrowOnError(##class(Form.JSON.SQL).ParseOrderBy(%request.Get("orderby"), "DataPipe.Data.Inbox", .orderBy))
 	
-	set sql = "SELECT UpdatedTS, Id, Source, Pipe, MsgId, Element, Subject, Ignored, Status, StagingStatus, OperStatus, nvl(ValidationErrors,'[]') JSON@ValidationErrors, nvl(OperErrors,'[]') JSON@OperErrors, OperRetries FROM DataPipe_Data.VInbox "_where_orderBy
+	set sql = "SELECT UpdatedTS, Id1 Id, Source, Pipe, MsgId, Element, Subject, Ignored, Status, StagingStatus, OperStatus, nvl(ValidationErrors,'[]') JSON@ValidationErrors, nvl(OperErrors,'[]') JSON@OperErrors, OperRetries FROM DataPipe_Data.VInbox "_where_orderBy
 	return sql
 }
 
