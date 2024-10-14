@@ -116,7 +116,11 @@ Install the package:
 zpm "install iris-datapipe 2.0.0"
 ```
 
-# Testing Upgrade from DataPipe 0.0.2 to DataPipe 2.x
+# Upgrading from previous versions
+
+## Upgrade from DataPipe 0.0.2 to DataPipe 2.x
+
+You can test an upgrade from DataPipe 0.0.2 to DataPipe 2.x following these steps
 
 Run a container with a brand new IRIS (upgrade)
 ```bash
@@ -130,7 +134,7 @@ iris session iris
 set r=##class(%Net.HttpRequest).%New(),r.Server="pm.community.intersystems.com",r.SSLConfiguration="ISC.FeatureTracker.SSL.Config" d r.Get("/packages/zpm/latest/installer"),$system.OBJ.LoadStream(r.HttpResponse.Data,"c")
 ```
 
-## Create a Pre-Upgrade situation
+### Create a Pre-Upgrade situation
 Install previous datapipe version
 ```bash
 zpm "install iris-datapipe 0.0.2"
@@ -143,7 +147,7 @@ Generate data:
 do ##class(DataPipe.Test.HL7.Helper).GenerateFilesHL7ADT(100)
 ```
 
-## Upgrade to new version
+### Upgrade to new version
 
 Stop Production
 
@@ -189,4 +193,30 @@ Make sure `CSPSystem` has read privileges on DataPipe database.
 
 Deploy datapipe-UI changing `environment.ts` config as needed.
 
-Start Production
+Start production
+
+## Upgrade previous versions to DataPipe 2.0.4
+
+Version 2.0.4 introduces an improvement in timestamp handling.
+
+After installing the new version you must migrate existing data as follows:
+
+```sql
+update datapipe_data.inbox set UpdatedTS = TO_POSIXTIME(UpdatedTS, 'YYYY-MM-DD HH24:MI:SS') 
+```
+
+```sql
+update datapipe_data.inbox set CreatedTS = TO_POSIXTIME(CreatedTS, 'YYYY-MM-DD HH24:MI:SS') 
+```
+
+```sql
+update datapipe_data.ingestion set CreatedTS = TO_POSIXTIME(CreatedTS, 'YYYY-MM-DD HH24:MI:SS') 
+```
+
+```sql
+update datapipe_data.staging set CreatedTS = TO_POSIXTIME(CreatedTS, 'YYYY-MM-DD HH24:MI:SS') 
+```
+
+```sql
+update datapipe_data.oper set CreatedTS = TO_POSIXTIME(CreatedTS, 'YYYY-MM-DD HH24:MI:SS') 
+```

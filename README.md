@@ -235,5 +235,6 @@ You can see a basic example [here](https://github.com/intersystems-ib/iris-datap
 ### Database resource
 Make sure that `CSPSystem` user in InterSystems IRIS have read permission on the resource of the database where you have installed DataPipe.
 
-# Upgrading from 0.x version to 2.x version
-See [CONTRIB.md](./CONTRIB.md) *Testing Upgrade from DataPipe 0.0.2 to DataPipe 2.x* section 
+# Upgrading from previous version
+
+See [CONTRIB.md](./CONTRIB.md) *Upgrading from previous versions* section for detailed instructions. 

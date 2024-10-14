@@ -27,19 +27,13 @@ ClassMethod getInboxActivitySummary() As %Status
 		set updatedTSFrom = $tr($get(%request.Data("UpdatedTSFrom",1)),"TZ"," ")
 		set updatedTSTo = $tr($get(%request.Data("UpdatedTSTo",1)), "TZ", " ")
 
+		set permittedPipes = ##class(DataPipe.Data.Pipe).PermittedPipes()
+		
 		// ok, errors query
-		set sqlStatus = "select count(*) from DataPipe_Data.VInbox where Status %INLIST ? and Pipe = ? and Ignored = ? and UpdatedTS between ? and ?"
+		set sqlStatus = "select count(id1) from DataPipe_Data.VInbox where Status %INLIST ? and Pipe = ? and Ignored = ? and UpdatedTS between TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') and TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS')"
 		set stmStatus = ##class(%SQL.Statement).%New()
 		$$$ThrowOnError(stmStatus.%Prepare(sqlStatus))
 
-		/*
-		// warning query
-		set sqlWarning = "select count(*) from DataPipe_Data.VInbox where StagingStatus = ? and Pipe = ? and Ignored = ? and UpdatedTS between ? and ?"
-		set stmWarning = ##class(%SQL.Statement).%New()
-		$$$ThrowOnError(stmWarning.%Prepare(sqlWarning))
-		*/
-		
-		set permittedPipes = ##class(DataPipe.Data.Pipe).PermittedPipes()
 		set jsonObj = {}
 
 		for p=1:1:$listlength(permittedPipes) {
@@ -62,13 +56,6 @@ ClassMethod getInboxActivitySummary() As %Status
 			if result.%Next() {
 				set jsonPipe.ok = result.%GetData(1)
 			}
-			/*
-			// warning
-			set result = stmWarning.%Execute("WARNING", pipe, 0, updatedTSFrom, updatedTSTo)
-			if result.%Next() {
-				set jsonPipe.warnings = result.%GetData(1)
-			}
-			*/
 
 			do jsonObj.%Set(pipe, jsonPipe)
 		}

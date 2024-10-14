@@ -28,7 +28,7 @@ Property SessionId As %String;
 Property HeaderId As %String;
 
 /// Created
-Property CreatedTS As %TimeStamp;
+Property CreatedTS As %PosixTime;
 
 /// Operation layer status
 Property Status As %String(VALUELIST = ",N/A,PROCESSING,PROCESSED,ERROR,IGNORED") [ InitialExpression = "N/A" ];

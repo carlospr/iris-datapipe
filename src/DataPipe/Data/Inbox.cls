@@ -21,10 +21,10 @@ Property Status As %String(VALUELIST = ",INGESTING,ERROR-INGESTING,STAGING,ERROR
 Property Ignored As %Boolean [ InitialExpression = 0 ];
 
 /// Created
-Property CreatedTS As %TimeStamp;
+Property CreatedTS As %PosixTime;
 
 /// Updated
-Property UpdatedTS As %TimeStamp;
+Property UpdatedTS As %PosixTime;
 
 /// Ref. to last Ingestion
 Property LastIngestion As Ingestion(%JSONREFERENCE = "ID");

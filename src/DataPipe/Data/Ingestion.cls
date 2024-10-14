@@ -34,7 +34,7 @@ Property SessionId As %String;
 Property HeaderId As %String;
 
 /// Created 
-Property CreatedTS As %TimeStamp;
+Property CreatedTS As %PosixTime;
 
 /// parent Inbox
 Relationship Inbox As Inbox(%JSONREFERENCE = "ID") [ Cardinality = one, Inverse = Ingestions ];
