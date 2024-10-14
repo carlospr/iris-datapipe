@@ -34,6 +34,11 @@ ClassMethod getInboxActivitySummary() As %Status
 		set stmStatus = ##class(%SQL.Statement).%New()
 		$$$ThrowOnError(stmStatus.%Prepare(sqlStatus))
 
+		// warning query
+		set sqlWarning = "select count(*) from DataPipe_Data.VInbox where StagingStatus = ? and Pipe = ? and Ignored = ? and UpdatedTS between TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') and TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS')"
+		set stmWarning = ##class(%SQL.Statement).%New()
+		$$$ThrowOnError(stmWarning.%Prepare(sqlWarning))
+
 		set jsonObj = {}
 
 		for p=1:1:$listlength(permittedPipes) {
@@ -56,6 +61,12 @@ ClassMethod getInboxActivitySummary() As %Status
 			if result.%Next() {
 				set jsonPipe.ok = result.%GetData(1)
 			}
+			// warnings
+			set result = stmWarning.%Execute("WARNING", pipe, 0, updatedTSFrom, updatedTSTo)
+			if result.%Next() {
+				set jsonPipe.warnings = result.%GetData(1)
+			}
+			
 
 			do jsonObj.%Set(pipe, jsonPipe)
 		}
