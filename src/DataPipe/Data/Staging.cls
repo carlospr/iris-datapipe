@@ -28,7 +28,7 @@ Property SessionId As %String;
 Property HeaderId As %String;
 
 /// Created
-Property CreatedTS As %PosixTime;
+Property CreatedTS As %TimeStamp;
 
 /// Staging layer status
 Property Status As %String(VALUELIST = ",N/A,VALID,INVALID,WARNING") [ InitialExpression = "N/A" ];

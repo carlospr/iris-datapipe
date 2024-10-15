@@ -33,12 +33,12 @@ ClassMethod getInboxActivitySummary() As %Status
 		set updatedTSTo = $tr($get(%request.Data("UpdatedTSTo",1)), "TZ", " ")
 
 		// status query
-		set sqlStatus = "select pipe, count(id1) from DataPipe_Data.VInbox where Status %INLIST ? and Ignored = ? and UpdatedTS between TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') and TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') group by Pipe"
+		set sqlStatus = "select pipe, count(id1) from DataPipe_Data.VInbox where Status %INLIST ? and Ignored = ? and UpdatedTS between ? and ? group by Pipe"
 		set stmStatus = ##class(%SQL.Statement).%New()
 		$$$ThrowOnError(stmStatus.%Prepare(sqlStatus))
 
 		// warning query
-		set sqlWarning = "select pipe, count(id1) from DataPipe_Data.VInbox where StagingStatus = ? and Ignored = ? and UpdatedTS between TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') and TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') group by Pipe"
+		set sqlWarning = "select pipe, count(id1) from DataPipe_Data.VInbox where StagingStatus = ? and Ignored = ? and UpdatedTS between ? and ? group by Pipe"
 		set stmWarning = ##class(%SQL.Statement).%New()
 		$$$ThrowOnError(stmWarning.%Prepare(sqlWarning))
 

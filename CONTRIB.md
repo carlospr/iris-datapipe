@@ -195,28 +195,3 @@ Deploy datapipe-UI changing `environment.ts` config as needed.
 
 Start production
 
-## Upgrade previous versions to DataPipe 2.0.4
-
-Version 2.0.4 introduces an improvement in timestamp handling.
-
-After installing the new version you must migrate existing data as follows:
-
-```sql
-update datapipe_data.inbox set UpdatedTS = TO_POSIXTIME(UpdatedTS, 'YYYY-MM-DD HH24:MI:SS') 
-```
-
-```sql
-update datapipe_data.inbox set CreatedTS = TO_POSIXTIME(CreatedTS, 'YYYY-MM-DD HH24:MI:SS') 
-```
-
-```sql
-update datapipe_data.ingestion set CreatedTS = TO_POSIXTIME(CreatedTS, 'YYYY-MM-DD HH24:MI:SS') 
-```
-
-```sql
-update datapipe_data.staging set CreatedTS = TO_POSIXTIME(CreatedTS, 'YYYY-MM-DD HH24:MI:SS') 
-```
-
-```sql
-update datapipe_data.oper set CreatedTS = TO_POSIXTIME(CreatedTS, 'YYYY-MM-DD HH24:MI:SS') 
-```
