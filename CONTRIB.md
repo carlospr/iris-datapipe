@@ -195,7 +195,7 @@ Deploy datapipe-UI changing `environment.ts` config as needed.
 
 Start production
 
-## Upgrade previous versions to DataPipe 2.0.4
+## Upgrade previous versions to DataPipe 2.0.4
 
 Version 2.0.4 introduces an improvement in timestamp handling.
 
