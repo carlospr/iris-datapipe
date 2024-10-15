@@ -19,6 +19,11 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 }
 
 /// Return Inbox summary. This is used in dashboard (UI)
+/// Example:
+/// {
+///   "HL7-ADT": { "ok": 174, "errors": 126,"inprogress": 0, "warnings": 19 },
+///   "REST-API": { "ok": 478, "errors": 22, "inprogress": 0, "warnings": 78 }
+/// }
 ClassMethod getInboxActivitySummary() As %Status
 {
 	set ret = $$$OK
@@ -27,50 +32,56 @@ ClassMethod getInboxActivitySummary() As %Status
 		set updatedTSFrom = $tr($get(%request.Data("UpdatedTSFrom",1)),"TZ"," ")
 		set updatedTSTo = $tr($get(%request.Data("UpdatedTSTo",1)), "TZ", " ")
 
-		set permittedPipes = ##class(DataPipe.Data.Pipe).PermittedPipes()
-		
-		// ok, errors query
-		set sqlStatus = "select count(id1) from DataPipe_Data.VInbox where Status %INLIST ? and Pipe = ? and Ignored = ? and UpdatedTS between TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') and TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS')"
+		// status query
+		set sqlStatus = "select pipe, count(id1) from DataPipe_Data.VInbox where Status %INLIST ? and Ignored = ? and UpdatedTS between TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') and TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') group by Pipe"
 		set stmStatus = ##class(%SQL.Statement).%New()
 		$$$ThrowOnError(stmStatus.%Prepare(sqlStatus))
 
 		// warning query
-		set sqlWarning = "select count(*) from DataPipe_Data.VInbox where StagingStatus = ? and Pipe = ? and Ignored = ? and UpdatedTS between TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') and TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS')"
+		set sqlWarning = "select pipe, count(id1) from DataPipe_Data.VInbox where StagingStatus = ? and Ignored = ? and UpdatedTS between TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') and TO_POSIXTIME(?, 'YYYY-MM-DD HH24:MI:SS') group by Pipe"
 		set stmWarning = ##class(%SQL.Statement).%New()
 		$$$ThrowOnError(stmWarning.%Prepare(sqlWarning))
 
-		set jsonObj = {}
+		kill tmp
 
-		for p=1:1:$listlength(permittedPipes) {
-			set pipe = $listget(permittedPipes, p)
-
-			set jsonPipe = { "errors": 0, "ok": 0, "warnings": 0 }
-			
-			// errors
-			set result = stmStatus.%Execute($lb("ERROR-OPERATING","ERROR-STAGING","ERROR-INGESTING","ERROR-GENERAL"), pipe, 0, updatedTSFrom, updatedTSTo)
-			if result.%Next() {
-				set jsonPipe.errors = result.%GetData(1)
-			}
-			// in progress
-			set result = stmStatus.%Execute($lb("OPERATING","STAGING","INGESTING"), pipe, 0, updatedTSFrom, updatedTSTo)
-			if result.%Next() {
-				set jsonPipe.inprogress = result.%GetData(1)
-			}
-			// ok
-			set result = stmStatus.%Execute($lb("DONE"), pipe, 0, updatedTSFrom, updatedTSTo)
-			if result.%Next() {
-				set jsonPipe.ok = result.%GetData(1)
-			}
-			// warnings
-			set result = stmWarning.%Execute("WARNING", pipe, 0, updatedTSFrom, updatedTSTo)
-			if result.%Next() {
-				set jsonPipe.warnings = result.%GetData(1)
-			}
-			
-
-			do jsonObj.%Set(pipe, jsonPipe)
+		// ok
+		set result = stmStatus.%Execute($lb("DONE"), 0, updatedTSFrom, updatedTSTo)
+		while result.%Next() {
+			set pipe = result.%GetData(1), count = result.%GetData(2)
+			set tmp(pipe, "ok") = count
+		}
+		
+		// in progress
+		set result = stmStatus.%Execute($lb("OPERATING","STAGING","INGESTING"), 0, updatedTSFrom, updatedTSTo)
+		while result.%Next() {
+			set pipe = result.%GetData(1), count = result.%GetData(2)
+			set tmp(pipe, "inprogress") = count
 		}
 
+		// errors
+		set result = stmStatus.%Execute($lb("ERROR-OPERATING","ERROR-STAGING","ERROR-INGESTING","ERROR-GENERAL"), 0, updatedTSFrom, updatedTSTo)
+		while result.%Next() {
+			set pipe = result.%GetData(1), count = result.%GetData(2)
+			set tmp(pipe, "errors") = count
+		}
+
+		// warning
+		set result = stmWarning.%Execute("WARNING", 0, updatedTSFrom, updatedTSTo)
+		while result.%Next() {
+			set pipe = result.%GetData(1), count = result.%GetData(2)
+			set tmp(pipe, "warnings") = count
+		}
+
+		set jsonObj = {}
+
+		set pipe=""
+		for {
+			set pipe=$order(tmp(pipe))
+			quit:pipe=""
+			set ok=$get(tmp(pipe, "ok"),0), errors=$get(tmp(pipe, "errors"),0), inprogress=$get(tmp(pipe, "inprogress"),0), warnings=$get(tmp(pipe, "warnings"),0)
+			do jsonObj.%Set(pipe, {"ok": (ok), "errors": (errors), "inprogress": (inprogress), "warnings": (warnings)} )
+		}
+		
 		do jsonObj.%ToJSON()
 		
 	} catch ex {

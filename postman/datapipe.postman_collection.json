@@ -117,6 +117,73 @@
 			"response": []
 		},
 		{
+			"name": "inboxActivity",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Rest.\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/dpipe/api/rf2/form/objects/DataPipe.Data.Inbox/custom/find?filter=Pipe+contains+ADT&page=1&size=10&collation=UPPER&orderby=1+desc",
+					"protocol": "http",
+					"host": [
+						"{{host}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"dpipe",
+						"api",
+						"rf2",
+						"form",
+						"objects",
+						"DataPipe.Data.Inbox",
+						"custom",
+						"find"
+					],
+					"query": [
+						{
+							"key": "filter",
+							"value": "Pipe+contains+ADT"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "size",
+							"value": "10"
+						},
+						{
+							"key": "collation",
+							"value": "UPPER"
+						},
+						{
+							"key": "orderby",
+							"value": "1+desc"
+						}
+					]
+				},
+				"description": "This query uses **`App.Data.Show:queryFIND()`** *classmethod* in IRIS.\n\n```\nClassMethod queryFIND() As %String\n{\n  quit \"showid id, title, description \"\n}\n```"
+			},
+			"response": []
+		},
+		{
 			"name": "Create Pipe",
 			"request": {
 				"method": "POST",
