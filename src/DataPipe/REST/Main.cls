@@ -31,42 +31,46 @@ ClassMethod getInboxActivitySummary() As %Status
 		// get parameters
 		set updatedTSFrom = $tr($get(%request.Data("UpdatedTSFrom",1)),"TZ"," ")
 		set updatedTSTo = $tr($get(%request.Data("UpdatedTSTo",1)), "TZ", " ")
+		set serializedPipes = $listfromstring($get(%request.Data("Pipes",1)), "~")
+		if serializedPipes="" {
+			set serializedPipes = ##class(DataPipe.Data.Pipe).PermittedPipes()
+		}
 
 		// status query
-		set sqlStatus = "select pipe, count(id1) from DataPipe_Data.VInbox where Status %INLIST ? and Ignored = ? and UpdatedTS between ? and ? group by Pipe"
+		set sqlStatus = "select pipe, count(id1) from DataPipe_Data.VInbox where Pipe %INLIST ? and Status %INLIST ? and Ignored = ? and UpdatedTS between ? and ? group by Pipe"
 		set stmStatus = ##class(%SQL.Statement).%New()
 		$$$ThrowOnError(stmStatus.%Prepare(sqlStatus))
 
 		// warning query
-		set sqlWarning = "select pipe, count(id1) from DataPipe_Data.VInbox where StagingStatus = ? and Ignored = ? and UpdatedTS between ? and ? group by Pipe"
+		set sqlWarning = "select pipe, count(id1) from DataPipe_Data.VInbox where Pipe %INLIST ? and StagingStatus = ? and Ignored = ? and UpdatedTS between ? and ? group by Pipe"
 		set stmWarning = ##class(%SQL.Statement).%New()
 		$$$ThrowOnError(stmWarning.%Prepare(sqlWarning))
 
 		kill tmp
 
 		// ok
-		set result = stmStatus.%Execute($lb("DONE"), 0, updatedTSFrom, updatedTSTo)
+		set result = stmStatus.%Execute(serializedPipes, $lb("DONE"), 0, updatedTSFrom, updatedTSTo)
 		while result.%Next() {
 			set pipe = result.%GetData(1), count = result.%GetData(2)
 			set tmp(pipe, "ok") = count
 		}
 		
 		// in progress
-		set result = stmStatus.%Execute($lb("OPERATING","STAGING","INGESTING"), 0, updatedTSFrom, updatedTSTo)
+		set result = stmStatus.%Execute(serializedPipes, $lb("OPERATING","STAGING","INGESTING"), 0, updatedTSFrom, updatedTSTo)
 		while result.%Next() {
 			set pipe = result.%GetData(1), count = result.%GetData(2)
 			set tmp(pipe, "inprogress") = count
 		}
 
 		// errors
-		set result = stmStatus.%Execute($lb("ERROR-OPERATING","ERROR-STAGING","ERROR-INGESTING","ERROR-GENERAL"), 0, updatedTSFrom, updatedTSTo)
+		set result = stmStatus.%Execute(serializedPipes, $lb("ERROR-OPERATING","ERROR-STAGING","ERROR-INGESTING","ERROR-GENERAL"), 0, updatedTSFrom, updatedTSTo)
 		while result.%Next() {
 			set pipe = result.%GetData(1), count = result.%GetData(2)
 			set tmp(pipe, "errors") = count
 		}
 
 		// warning
-		set result = stmWarning.%Execute("WARNING", 0, updatedTSFrom, updatedTSTo)
+		set result = stmWarning.%Execute(serializedPipes, "WARNING", 0, updatedTSFrom, updatedTSTo)
 		while result.%Next() {
 			set pipe = result.%GetData(1), count = result.%GetData(2)
 			set tmp(pipe, "warnings") = count
