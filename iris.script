@@ -9,9 +9,6 @@
     set prop("AutheEnabled")=48
     do ##class(Security.Services).Modify("%Service_CallIn",.prop)
 
-    // install ipm
-    set r=##class(%Net.HttpRequest).%New(),r.Server="pm.community.intersystems.com",r.SSLConfiguration="ISC.FeatureTracker.SSL.Config" d r.Get("/packages/zpm/latest/installer"),$system.OBJ.LoadStream(r.HttpResponse.Data,"c")
-
     // create ns for dev environment
     do $SYSTEM.OBJ.Load("/opt/irisapp/Installer.cls", "ck") 
     
@@ -26,8 +23,13 @@
     write ##class(Security.Users).Import("/opt/irisapp/install/users.xml")
     write ##class(Security.Applications).Import("/opt/irisapp/install/webapps.xml")
 
-    // install DataPipe (zpm)
     set $namespace = "DPIPE"
+    
+    // install ipm
+    set version="latest" s r=##class(%Net.HttpRequest).%New(),r.Server="pm.community.intersystems.com",r.SSLConfiguration="ISC.FeatureTracker.SSL.Config" d r.Get("/packages/zpm/"_version_"/installer"),$system.OBJ.LoadStream(r.HttpResponse.Data,"c")
+    zpm "enable -community"
+    
+    // install DataPipe (zpm)
     zpm "load -verbose /opt/irisapp/"
 
     // modify restforms2 abstract: convert to UTF8 and HandleCorsRequest (useful for dev environment)
