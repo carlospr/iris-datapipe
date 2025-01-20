@@ -14,7 +14,7 @@ XData UrlMap [ XMLNamespace = "http://www.intersystems.com/urlmap" ]
 <Route Url="/inboxActivity" Method="GET" Call="getInboxActivitySummary"/>
 <Route Url="/repeat" Method="POST" Call="multiRepeat"/>
 <Route Url="/ignore" Method="PUT" Call="multiIgnore"/>
-<Route Url="/operRequest/:headerId" Method="PUT" Call="updateOperRequest"/>
+<Route Url="/operRequest/:namespace/:headerId" Method="PUT" Call="updateOperRequest"/>
 </Routes>
 }
 
@@ -251,7 +251,7 @@ ClassMethod getUserInfo() As %Status
 
 /// Updates an OperRequest.
 /// This is used when manually editing normalized data
-ClassMethod updateOperRequest(headerId As %String = "") As %Status
+ClassMethod updateOperRequest(namespace As %String = "", headerId As %String = "") As %Status
 {
 	set ret = $$$OK
     try {
@@ -260,6 +260,7 @@ ClassMethod updateOperRequest(headerId As %String = "") As %Status
 			quit
 		}
 
+        set:(namespace '= "") $namespace = namespace
 		// get header and operRequest message
 		set header = ##class(Ens.MessageHeader).%OpenId(headerId)
 		set operRequest = ##class(DataPipe.Msg.OperReq).%OpenId(header.MessageBodyId)
