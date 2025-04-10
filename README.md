@@ -1,4 +1,4 @@
-DataPipe an interoperability framework to ingest data in InterSystems IRIS in a flexible way.
+DataPipe is an interoperability framework to ingest data in InterSystems IRIS in a flexible way.
 
 <img src="img/datapipe-diagram2.png" width="800" />
 
